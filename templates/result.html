@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>結果</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>🍜 今すぐ入れる店</h1>
+    <p class="sub-text">上からおすすめ順です</p>
+
+    {% for shop in shops %}
+    <div class="card {{ shop.wait_level }}{% if loop.first %} card-top{% endif %}">
+        {% if loop.first %}<span class="recommend-badge">おすすめ</span>{% endif %}
+        <h2>{{ shop.name }}</h2>
+
+        {% if shop.wait_level == 'green' %}
+        <p class="wait-label">🟢 すぐ入れる</p>
+        {% elif shop.wait_level == 'yellow' %}
+        <p class="wait-label">🟡 5分以内</p>
+        {% elif shop.wait_level == 'red' %}
+        <p class="wait-label">🔴 注意</p>
+        {% endif %}
+
+        {% if shop.is_open %}
+        <p class="open-status open">● 営業中</p>
+        {% else %}
+        <p class="open-status closed">● 営業時間外</p>
+        {% endif %}
+
+        <p class="shop-meta">🚶 {{ shop.walk_time }}</p>
+        <span class="shop-tag">{{ shop.tag }}</span>
+
+        <p class="shop-comment">{{ shop.comment }}</p>
+        <p class="shop-address">📍 {{ shop.address }}</p>
+
+        <a href="{{ shop.map_url }}" class="map-button" target="_blank" rel="noopener noreferrer">地図で見る</a>
+        <a href="#" class="go-button">この店に行く →</a>
+    </div>
+    {% endfor %}
+
+    <a href="/" class="back-button">← 戻る</a>
+</div>
+
+</body>
+</html>

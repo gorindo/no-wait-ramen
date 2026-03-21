@@ -1,0 +1,249 @@
+/* ===========================
+   共通
+=========================== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f5f5f5;
+    line-height: 1.7;
+}
+
+/* ===========================
+   トップページ専用
+=========================== */
+body.index-page {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #111;
+}
+
+/* 背景画像ラッパー */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 20vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    text-align: center;
+}
+
+/* 黒オーバーレイ */
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.52);
+}
+
+/* テキスト・ボタンを前面に */
+.hero-overlay {
+    position: relative;
+    z-index: 1;
+    padding: 40px 28px;
+    width: 100%;
+    max-width: 420px;
+}
+
+.hero-eyebrow {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.1em;
+    margin: 0 0 20px;
+}
+
+.hero-title {
+    font-size: 38px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 14px;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+.hero-copy {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    margin: 0 0 30px;
+    letter-spacing: 0.05em;
+}
+
+.hero-button {
+    display: block;
+    width: 100%;
+    padding: 22px 0;
+    font-size: 18px;
+    font-weight: 700;
+    background: radial-gradient(ellipse at 50% 30%, #ffaa55 0%, #ff6b00 60%, #e85500 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    box-shadow:
+        0 6px 18px rgba(255, 107, 0, 0.6),
+        0 0 36px rgba(255, 130, 0, 0.3);
+    letter-spacing: 0.04em;
+    transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.hero-button:hover {
+    box-shadow:
+        0 8px 24px rgba(255, 107, 0, 0.75),
+        0 0 52px rgba(255, 130, 0, 0.45);
+    transform: translateY(-2px);
+}
+
+.hero-button:active {
+    transform: scale(0.97) translateY(0);
+    box-shadow: 0 4px 10px rgba(255, 107, 0, 0.45);
+}
+
+/* ===========================
+   結果ページ共通
+=========================== */
+.container {
+    padding: 20px;
+    text-align: center;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.sub-text {
+    font-size: 13px;
+    color: #888;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.tagline {
+    font-size: 14px;
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+/* メインボタン（result.html 用） */
+.main-button {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    font-size: 18px;
+    background-color: #ff6b00;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+/* カード */
+.card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.card-top {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    border-top: 3px solid #ff6b00;
+}
+
+.green  { border-left: 6px solid #28a745; }
+.yellow { border-left: 6px solid #ffc107; }
+.red    { border-left: 6px solid #dc3545; }
+
+.wait-label {
+    margin: 4px 0 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.recommend-badge {
+    display: inline-block;
+    background-color: #ff6b00;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+}
+
+.open-status {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 4px 0 6px;
+}
+
+.open-status.open   { color: #28a745; }
+.open-status.closed { color: #aaa; font-weight: normal; }
+
+.shop-meta,
+.shop-address {
+    font-size: 13px;
+    color: #888;
+    margin: 4px 0;
+}
+
+.shop-tag {
+    display: inline-block;
+    background-color: #f0f0f0;
+    color: #555;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin: 6px 0 8px;
+}
+
+.shop-comment {
+    font-size: 14px;
+    color: #333;
+    margin: 8px 0 6px;
+}
+
+.map-button {
+    display: block;
+    margin-top: 10px;
+    padding: 10px 16px;
+    background-color: #fff;
+    color: #ff6b00;
+    border: 2px solid #ff6b00;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.go-button {
+    display: block;
+    margin-top: 8px;
+    padding: 12px 16px;
+    background-color: #ff6b00;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.back-button {
+    display: block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #333;
+}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Wait Ramen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="index-page">
+
+{% set ramen_url = url_for('static', filename='ramen.jpg') %}
+<div class="hero" style="background-image: url('{{ ramen_url }}')">
+    <div class="hero-overlay">
+        <p class="hero-eyebrow">🍜 No Wait Ramen</p>
+        <h1 class="hero-title">今すぐ入れる<br>ラーメン</h1>
+        <p class="hero-copy">今すぐ、空席に滑り込め。</p>
+        <a href="/result" class="hero-button">空席を今すぐ確認</a>
+    </div>
+</div>
+
+</body>
+</html>
