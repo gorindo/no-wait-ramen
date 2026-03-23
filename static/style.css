@@ -78,6 +78,13 @@ body.index-page {
     letter-spacing: 0.05em;
 }
 
+.hero-note {
+    margin: 16px 0 0;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.04em;
+}
+
 /* フィルタボタン群（トップ） */
 .filter-buttons {
     display: flex;
@@ -244,14 +251,14 @@ h1 {
 }
 
 /* 左ライン：wait_level 別カラー */
-.green  { border-left-color: #1e9448; }
-.yellow { border-left-color: #e69500; }
-.red    { border-left-color: #d93025; }
+.green  { border-left-color: #16a34a; }
+.yellow { border-left-color: #d97706; }
+.red    { border-left-color: #dc2626; }
 
 /* カード全体への薄い色味 */
-.card.green  { background: #f6fdf7; }
-.card.yellow { background: #fffdf0; }
-.card.red    { background: #fff7f6; }
+.card.green  { background: #f0fdf4; }
+.card.yellow { background: #fffbeb; }
+.card.red    { background: #fff1f2; }
 
 /* カードヘッダー行 */
 .card-head {
@@ -306,9 +313,9 @@ h1 {
     white-space: nowrap;
 }
 
-.wait-pill--green  { background: #d2f0db; color: #145c2a; }
-.wait-pill--yellow { background: #fde9a0; color: #7a4800; }
-.wait-pill--red    { background: #fac8c5; color: #8e1a12; }
+.wait-pill--green  { background: #16a34a; color: #fff; }
+.wait-pill--yellow { background: #d97706; color: #fff; }
+.wait-pill--red    { background: #dc2626; color: #fff; }
 
 /* メタ情報行 */
 .card-meta {

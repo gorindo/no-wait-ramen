@@ -13,13 +13,18 @@
     <header class="page-header">
         <h1>今すぐ入れる店</h1>
         <p class="filter-label">📍 {{ filter_label }}</p>
+
         <div class="filter-nav">
-            <a href="/result?max_walk=5" class="filter-chip{% if max_walk == 5 %} active{% endif %}">徒歩5分以内</a>
-            <a href="/result?max_walk=10" class="filter-chip{% if max_walk == 10 %} active{% endif %}">徒歩10分以内</a>
-            <a href="/result" class="filter-chip{% if max_walk is none %} active{% endif %}">すべて</a>
+            <a href="/result?max_walk=5"
+               class="filter-chip{% if max_walk == 5 %} active{% endif %}">徒歩5分以内</a>
+            <a href="/result?max_walk=10"
+               class="filter-chip{% if max_walk == 10 %} active{% endif %}">徒歩10分以内</a>
+            <a href="/result"
+               class="filter-chip{% if max_walk is none %} active{% endif %}">すべて</a>
         </div>
+
         <p class="sub-text">
-            営業中・待ち時間・近さをもとに最大{{ max_display }}件を表示
+            待ち時間・近さをもとに最大{{ max_display }}件を表示
             {% if total_count > max_display %}（全{{ total_count }}件中）{% endif %}
         </p>
     </header>
@@ -37,20 +42,14 @@
                     {% if shop.wait_level == 'green' %}
                     <span class="wait-pill wait-pill--green">すぐ入れる</span>
                     {% elif shop.wait_level == 'yellow' %}
-                    <span class="wait-pill wait-pill--yellow">少し待ち</span>
+                    <span class="wait-pill wait-pill--yellow">少し待つ</span>
                     {% elif shop.wait_level == 'red' %}
-                    <span class="wait-pill wait-pill--red">混雑中</span>
+                    <span class="wait-pill wait-pill--red">待つかも</span>
                     {% endif %}
                 </div>
             </div>
 
             <div class="card-meta">
-                {% if shop.is_open %}
-                <span class="open-status open">● 営業中</span>
-                {% else %}
-                <span class="open-status closed">● 営業時間外</span>
-                {% endif %}
-                <span class="meta-sep">·</span>
                 <span class="walk-text">🚶 {{ shop.walk_time }}</span>
                 <span class="meta-sep">·</span>
                 <span class="shop-tag">{{ shop.tag }}</span>
@@ -67,7 +66,7 @@
         </div>
         {% endfor %}
     {% else %}
-        <p class="no-result">この範囲内の店舗が見つかりませんでした。<br>条件を広げてみてください。</p>
+        <p class="no-result">この条件に合う営業中の店舗が見つかりませんでした。<br>条件を広げてみてください。</p>
     {% endif %}
 
     <a href="/" class="back-button">← 条件を変える</a>

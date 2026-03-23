@@ -14,11 +14,12 @@ def sort_key(shop):
     return (is_closed, wait_order, shop["walk_minutes"])
 
 # 仮データ（池袋駅徒歩圏）
+# wait_level: green=すぐ入れる / yellow=少し待つ / red=並んでいる
 ramen_shops = [
     {
         "name": "五行 池袋西口店",
         "wait_level": "green",
-        "comment": "ガラガラです、すぐ座れます",
+        "comment": "ガラガラです、今すぐ座れます",
         "address": "東京都豊島区西池袋1-10-3",
         "map_url": "https://maps.google.com/?q=五行+池袋西口",
         "is_open": True,
@@ -29,7 +30,7 @@ ramen_shops = [
     {
         "name": "つけ麺 道 池袋東口",
         "wait_level": "yellow",
-        "comment": "少し待つけど食べる価値あり",
+        "comment": "少し並んでるけど回転早め",
         "address": "東京都豊島区東池袋1-6-3",
         "map_url": "https://maps.google.com/?q=つけ麺+道+池袋東口",
         "is_open": True,
@@ -39,8 +40,8 @@ ramen_shops = [
     },
     {
         "name": "博多風龍 池袋店",
-        "wait_level": "green",
-        "comment": "空席あり、今が狙い目",
+        "wait_level": "yellow",
+        "comment": "席が空き始めてきた感じ",
         "address": "東京都豊島区西池袋1-15-2",
         "map_url": "https://maps.google.com/?q=博多風龍+池袋",
         "is_open": True,
@@ -50,8 +51,8 @@ ramen_shops = [
     },
     {
         "name": "無敵家",
-        "wait_level": "yellow",
-        "comment": "5分くらいでいけそう",
+        "wait_level": "red",
+        "comment": "行列あり、しばらく待ちます",
         "address": "東京都豊島区南池袋1-17-1",
         "map_url": "https://maps.google.com/?q=無敵家+池袋",
         "is_open": True,
@@ -62,7 +63,7 @@ ramen_shops = [
     {
         "name": "麺屋 武蔵 池袋店",
         "wait_level": "red",
-        "comment": "行列あり、20分待ちくらい",
+        "comment": "並んでます、20分くらいは待つかも",
         "address": "東京都豊島区南池袋1-16-10",
         "map_url": "https://maps.google.com/?q=麺屋+武蔵+池袋",
         "is_open": True,
@@ -72,8 +73,8 @@ ramen_shops = [
     },
     {
         "name": "ラーメン二郎 池袋東口店",
-        "wait_level": "green",
-        "comment": "今ならスッと入れる",
+        "wait_level": "yellow",
+        "comment": "数人並んでます、タイミング次第",
         "address": "東京都豊島区東池袋1-13-12",
         "map_url": "https://maps.google.com/?q=ラーメン二郎+池袋東口店",
         "is_open": True,
@@ -83,8 +84,8 @@ ramen_shops = [
     },
     {
         "name": "頑者 池袋店",
-        "wait_level": "yellow",
-        "comment": "数人並んでる、10分くらい",
+        "wait_level": "red",
+        "comment": "外まで列が出てます",
         "address": "東京都豊島区東池袋1-12-6",
         "map_url": "https://maps.google.com/?q=頑者+池袋",
         "is_open": True,
@@ -94,8 +95,8 @@ ramen_shops = [
     },
     {
         "name": "らーめん壱角家 池袋西口店",
-        "wait_level": "yellow",
-        "comment": "カウンター埋まり気味",
+        "wait_level": "green",
+        "comment": "待ちなし、すんなり入れます",
         "address": "東京都豊島区西池袋2-28-7",
         "map_url": "https://maps.google.com/?q=壱角家+池袋西口",
         "is_open": True,
@@ -105,8 +106,8 @@ ramen_shops = [
     },
     {
         "name": "鷹の目 池袋",
-        "wait_level": "green",
-        "comment": "今すぐ入れます",
+        "wait_level": "yellow",
+        "comment": "少し空きあり",
         "address": "東京都豊島区西池袋2-18-4",
         "map_url": "https://maps.google.com/?q=鷹の目+池袋",
         "is_open": False,
@@ -116,8 +117,8 @@ ramen_shops = [
     },
     {
         "name": "らあめん花月嵐 池袋店",
-        "wait_level": "green",
-        "comment": "混んでないです",
+        "wait_level": "yellow",
+        "comment": "少し空きあり",
         "address": "東京都豊島区東池袋1-28-5",
         "map_url": "https://maps.google.com/?q=花月嵐+池袋",
         "is_open": True,
@@ -128,13 +129,24 @@ ramen_shops = [
     {
         "name": "麺創房 無敵家 別館",
         "wait_level": "red",
-        "comment": "今はちょい混み",
+        "comment": "満席続き、今は厳しい",
         "address": "東京都豊島区南池袋1-21-5",
         "map_url": "https://maps.google.com/?q=麺創房+無敵家+別館+池袋",
         "is_open": False,
         "walk_time": "池袋駅から徒歩5分",
         "walk_minutes": 5,
         "tag": "あっさり醤油"
+    },
+    {
+        "name": "黒帯 池袋店",
+        "wait_level": "red",
+        "comment": "人気店、今は列あり",
+        "address": "東京都豊島区南池袋1-8-4",
+        "map_url": "https://maps.google.com/?q=黒帯+池袋",
+        "is_open": True,
+        "walk_time": "池袋駅から徒歩5分",
+        "walk_minutes": 5,
+        "tag": "濃厚醤油"
     },
     {
         "name": "鶏白湯ラーメン 鳥の庄",
@@ -150,7 +162,7 @@ ramen_shops = [
     {
         "name": "東京豚骨拉麺 ばんから 池袋店",
         "wait_level": "yellow",
-        "comment": "少し待ちあり、回転は普通",
+        "comment": "タイミング次第で少し待つかも",
         "address": "東京都豊島区東池袋1-23-14",
         "map_url": "https://maps.google.com/?q=ばんから+池袋",
         "is_open": True,
@@ -160,8 +172,8 @@ ramen_shops = [
     },
     {
         "name": "麺屋 こころ 池袋",
-        "wait_level": "green",
-        "comment": "すんなり入れました",
+        "wait_level": "red",
+        "comment": "満席に近い、少し待って",
         "address": "東京都豊島区東池袋2-3-7",
         "map_url": "https://maps.google.com/?q=麺屋+こころ+池袋",
         "is_open": True,
@@ -170,15 +182,37 @@ ramen_shops = [
         "tag": "醤油ラーメン"
     },
     {
+        "name": "らーめん 天下一品 池袋東口店",
+        "wait_level": "red",
+        "comment": "混んでます、少し並ぶ覚悟で",
+        "address": "東京都豊島区東池袋1-42-16",
+        "map_url": "https://maps.google.com/?q=天下一品+池袋東口",
+        "is_open": True,
+        "walk_time": "池袋駅から徒歩6分",
+        "walk_minutes": 6,
+        "tag": "こってり"
+    },
+    {
         "name": "池袋大勝軒",
         "wait_level": "yellow",
-        "comment": "少し並んでるけど回転早め",
+        "comment": "少し並んでるけど流れてます",
         "address": "東京都豊島区南池袋2-42-7",
         "map_url": "https://maps.google.com/?q=池袋大勝軒",
         "is_open": True,
         "walk_time": "池袋駅から徒歩7分",
         "walk_minutes": 7,
         "tag": "もりそば・つけ麺"
+    },
+    {
+        "name": "北海道らーめん 札幌や 池袋",
+        "wait_level": "yellow",
+        "comment": "ほどよく混んでる感じ",
+        "address": "東京都豊島区西池袋3-30-9",
+        "map_url": "https://maps.google.com/?q=札幌や+池袋",
+        "is_open": True,
+        "walk_time": "池袋駅から徒歩7分",
+        "walk_minutes": 7,
+        "tag": "北海道味噌"
     },
     {
         "name": "麺屋 一燈 池袋",
@@ -205,7 +239,7 @@ ramen_shops = [
     {
         "name": "ソラノイロ 池袋",
         "wait_level": "green",
-        "comment": "穴場です、すぐ座れます",
+        "comment": "穴場です、今ならすぐ座れます",
         "address": "東京都豊島区南池袋2-18-5",
         "map_url": "https://maps.google.com/?q=ソラノイロ+池袋",
         "is_open": True,
@@ -215,8 +249,8 @@ ramen_shops = [
     },
     {
         "name": "麺処 花田 池袋店",
-        "wait_level": "green",
-        "comment": "待ちなし、静かです",
+        "wait_level": "yellow",
+        "comment": "少し待ちあり",
         "address": "東京都豊島区東池袋2-14-3",
         "map_url": "https://maps.google.com/?q=麺処+花田+池袋",
         "is_open": True,
@@ -226,8 +260,8 @@ ramen_shops = [
     },
     {
         "name": "麺や 七彩 池袋",
-        "wait_level": "yellow",
-        "comment": "少し待ちあり",
+        "wait_level": "red",
+        "comment": "手打ちのため回転遅め、並びます",
         "address": "東京都豊島区東池袋2-56-3",
         "map_url": "https://maps.google.com/?q=麺や+七彩+池袋",
         "is_open": True,
@@ -236,9 +270,20 @@ ramen_shops = [
         "tag": "手打ち中華そば"
     },
     {
+        "name": "塩そば 彩 池袋",
+        "wait_level": "yellow",
+        "comment": "タイミング次第",
+        "address": "東京都豊島区東池袋2-8-11",
+        "map_url": "https://maps.google.com/?q=塩そば+彩+池袋",
+        "is_open": True,
+        "walk_time": "池袋駅から徒歩9分",
+        "walk_minutes": 9,
+        "tag": "あっさり塩"
+    },
+    {
         "name": "中華そば 青葉 池袋",
         "wait_level": "yellow",
-        "comment": "ほどよく混んでる感じ",
+        "comment": "まあまあ混んでます",
         "address": "東京都豊島区南池袋3-12-8",
         "map_url": "https://maps.google.com/?q=中華そば+青葉+池袋",
         "is_open": True,
@@ -247,9 +292,20 @@ ramen_shops = [
         "tag": "中華そば"
     },
     {
+        "name": "麺家 うえだ 池袋",
+        "wait_level": "yellow",
+        "comment": "少し並んでます",
+        "address": "東京都豊島区西池袋2-42-3",
+        "map_url": "https://maps.google.com/?q=麺家+うえだ+池袋",
+        "is_open": True,
+        "walk_time": "池袋駅から徒歩10分",
+        "walk_minutes": 10,
+        "tag": "煮干し醤油"
+    },
+    {
         "name": "担々麺 吉虎 池袋",
         "wait_level": "green",
-        "comment": "空いてます",
+        "comment": "混んでいません、ゆっくり食べられます",
         "address": "東京都豊島区西池袋4-5-9",
         "map_url": "https://maps.google.com/?q=担々麺+吉虎+池袋",
         "is_open": True,
@@ -259,8 +315,8 @@ ramen_shops = [
     },
     {
         "name": "とんこつラーメン 天神 池袋",
-        "wait_level": "green",
-        "comment": "ゆったり食べられます",
+        "wait_level": "yellow",
+        "comment": "列が出てる、でも回転はよさそう",
         "address": "東京都豊島区東池袋3-8-12",
         "map_url": "https://maps.google.com/?q=とんこつラーメン+天神+池袋",
         "is_open": True,
@@ -278,61 +334,6 @@ ramen_shops = [
         "walk_time": "池袋駅から徒歩12分",
         "walk_minutes": 12,
         "tag": "鶏清湯"
-    },
-    {
-        "name": "らーめん 天下一品 池袋東口店",
-        "wait_level": "green",
-        "comment": "スムーズに入れます",
-        "address": "東京都豊島区東池袋1-42-16",
-        "map_url": "https://maps.google.com/?q=天下一品+池袋東口",
-        "is_open": True,
-        "walk_time": "池袋駅から徒歩6分",
-        "walk_minutes": 6,
-        "tag": "こってり"
-    },
-    {
-        "name": "北海道らーめん 札幌や 池袋",
-        "wait_level": "green",
-        "comment": "今なら待たずに入れます",
-        "address": "東京都豊島区西池袋3-30-9",
-        "map_url": "https://maps.google.com/?q=札幌や+池袋",
-        "is_open": True,
-        "walk_time": "池袋駅から徒歩7分",
-        "walk_minutes": 7,
-        "tag": "北海道味噌"
-    },
-    {
-        "name": "黒帯 池袋店",
-        "wait_level": "red",
-        "comment": "人気店、並んでます",
-        "address": "東京都豊島区南池袋1-8-4",
-        "map_url": "https://maps.google.com/?q=黒帯+池袋",
-        "is_open": True,
-        "walk_time": "池袋駅から徒歩5分",
-        "walk_minutes": 5,
-        "tag": "濃厚醤油"
-    },
-    {
-        "name": "塩そば 彩 池袋",
-        "wait_level": "green",
-        "comment": "静かでゆっくり食べられます",
-        "address": "東京都豊島区東池袋2-8-11",
-        "map_url": "https://maps.google.com/?q=塩そば+彩+池袋",
-        "is_open": True,
-        "walk_time": "池袋駅から徒歩9分",
-        "walk_minutes": 9,
-        "tag": "あっさり塩"
-    },
-    {
-        "name": "麺家 うえだ 池袋",
-        "wait_level": "yellow",
-        "comment": "週末は混むけど今は普通",
-        "address": "東京都豊島区西池袋2-42-3",
-        "map_url": "https://maps.google.com/?q=麺家+うえだ+池袋",
-        "is_open": True,
-        "walk_time": "池袋駅から徒歩10分",
-        "walk_minutes": 10,
-        "tag": "煮干し醤油"
     },
     {
         "name": "東池袋大勝軒 本店",
@@ -357,16 +358,21 @@ def index():
 def result():
     max_walk_str = request.args.get("max_walk")
 
+    # 徒歩圏フィルタ
     if max_walk_str and max_walk_str.isdigit():
         max_walk = int(max_walk_str)
         filtered = [s for s in ramen_shops if s["walk_minutes"] <= max_walk]
-        filter_label = f"池袋駅から徒歩{max_walk}分以内"
+        filter_label = f"池袋駅から徒歩{max_walk}分以内の営業中店舗"
     else:
         max_walk = None
-        filtered = ramen_shops
-        filter_label = "池袋駅周辺の全店舗"
+        filtered = list(ramen_shops)
+        filter_label = "池袋駅周辺の営業中店舗"
 
-    # 営業中・待ちレベル・徒歩分数の順でソート
+    # 営業中のみ表示（デフォルト動作）
+    # 将来 "閉店中も含む" 表示が必要になった場合は、ここで条件を分岐させる
+    filtered = [s for s in filtered if s["is_open"]]
+
+    # 待ちレベル・徒歩分数の順でソート
     filtered.sort(key=sort_key)
 
     total_count = len(filtered)
