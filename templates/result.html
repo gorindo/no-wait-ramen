@@ -6,7 +6,14 @@
     <title>結果</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="result-page">
+<body class="result-page{% if mode == 'nearby' %} has-debug-bar{% endif %}">
+
+{% if mode == 'nearby' %}
+<div id="debug-bar" class="debug-bar">DEBUG: nearby mode active</div>
+{% endif %}
+
+{# script type="application/json" はブラウザに実行されず、tojson は </script> を unicode エスケープするため安全 #}
+<script type="application/json" id="app-data">{{ {"shops": all_shops_json, "maxDisplay": max_display, "mode": mode} | tojson }}</script>
 
 <div class="container">
 
@@ -77,19 +84,28 @@
     <a href="/" class="back-button">← 条件を変える</a>
 </div>
 
-{# Jinja2 の出力を data 属性で渡すことで IDE の JS パーサー誤検知を回避 #}
-<div id="app-data"
-     data-shops="{{ all_shops_json | tojson | e }}"
-     data-max-display="{{ max_display }}"
-     data-mode="{{ mode }}"
-     hidden></div>
-
 <script>
 (function () {
-  const _d = document.getElementById('app-data').dataset;
-  const SHOPS       = JSON.parse(_d.shops);
-  const MAX_DISPLAY = parseInt(_d.maxDisplay, 10);
-  const MODE        = _d.mode;
+
+  // ---- デバッグ帯の更新 ----
+
+  function setDebug(msg, state) {
+    var bar = document.getElementById('debug-bar');
+    if (!bar) return;
+    bar.textContent = 'DEBUG: ' + msg;
+    bar.dataset.state = state || '';
+  }
+
+  setDebug('js loaded');
+
+  // ---- データ読み込み ----
+
+  var appData = JSON.parse(document.getElementById('app-data').textContent);
+  var SHOPS       = appData.shops;
+  var MAX_DISPLAY = appData.maxDisplay;
+  var MODE        = appData.mode;
+
+  setDebug('js loaded  shops=' + SHOPS.length + '  mode=' + MODE);
 
   // ---- ユーティリティ ----
 
@@ -103,74 +119,69 @@
 
   // Haversine 距離計算（メートル）
   function haversine(lat1, lng1, lat2, lng2) {
-    const R = 6371000;
-    const r = Math.PI / 180;
-    const dLat = (lat2 - lat1) * r;
-    const dLng = (lng2 - lng1) * r;
-    const a = Math.sin(dLat / 2) ** 2
-            + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(dLng / 2) ** 2;
+    var R = 6371000;
+    var r = Math.PI / 180;
+    var dLat = (lat2 - lat1) * r;
+    var dLng = (lng2 - lng1) * r;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+          + Math.cos(lat1 * r) * Math.cos(lat2 * r)
+          * Math.sin(dLng / 2) * Math.sin(dLng / 2);
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
   function fmtDist(m) {
     if (m < 100)  return '目の前';
-    if (m < 1000) return `約${Math.round(m / 10) * 10}m`;
-    return `約${(m / 1000).toFixed(1)}km`;
+    if (m < 1000) return '約' + (Math.round(m / 10) * 10) + 'm';
+    return '約' + (m / 1000).toFixed(1) + 'km';
   }
 
   // ---- カード HTML 生成 ----
 
-  const WAIT_LABEL = { green: 'すぐ入れる', yellow: '少し待つ', red: '待つかも' };
+  var WAIT_LABEL = { green: 'すぐ入れる', yellow: '少し待つ', red: '待つかも' };
 
   function buildCard(shop, index, distText) {
-    const isFirst = index === 0;
-    const topCls = isFirst ? ' card-top' : '';
-    const badge  = isFirst ? '<span class="recommend-badge">おすすめ</span>' : '';
-    const pill   = WAIT_LABEL[shop.wait_level] || '';
-    const distHtml = distText
-      ? `<span class="distance-text">📍 現在地から${escHtml(distText)}</span><span class="meta-sep">·</span>`
+    var isFirst = index === 0;
+    var topCls  = isFirst ? ' card-top' : '';
+    var badge   = isFirst ? '<span class="recommend-badge">おすすめ</span>' : '';
+    var pill    = WAIT_LABEL[shop.wait_level] || '';
+    var distHtml = distText
+      ? '<span class="distance-text">📍 現在地から' + escHtml(distText) + '</span><span class="meta-sep">·</span>'
       : '';
 
-    return `
-<div class="card ${escHtml(shop.wait_level)}${topCls}">
-  <div class="card-head">
-    <div class="card-head-left">
-      ${badge}
-      <h2 class="shop-name">${escHtml(shop.name)}</h2>
-    </div>
-    <div class="card-head-right">
-      <span class="wait-pill wait-pill--${escHtml(shop.wait_level)}">${pill}</span>
-    </div>
-  </div>
-  <div class="card-meta">
-    ${distHtml}
-    <span class="walk-text">🚶 ${escHtml(shop.walk_time)}</span>
-    <span class="meta-sep">·</span>
-    <span class="shop-tag">${escHtml(shop.tag)}</span>
-  </div>
-  ${shop.reason ? `<span class="crowd-reason">${escHtml(shop.reason)}</span>` : ''}
-  <p class="shop-comment">${escHtml(shop.comment)}</p>
-  <p class="shop-address">${escHtml(shop.address)}</p>
-  <div class="card-actions">
-    <a href="${escHtml(shop.map_url)}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">地図で見る</a>
-    <a href="#" class="btn btn-primary">この店に行く →</a>
-  </div>
-</div>`;
+    return '<div class="card ' + escHtml(shop.wait_level) + topCls + '">'
+      + '<div class="card-head">'
+      + '<div class="card-head-left">' + badge + '<h2 class="shop-name">' + escHtml(shop.name) + '</h2></div>'
+      + '<div class="card-head-right"><span class="wait-pill wait-pill--' + escHtml(shop.wait_level) + '">' + pill + '</span></div>'
+      + '</div>'
+      + '<div class="card-meta">' + distHtml
+      + '<span class="walk-text">🚶 ' + escHtml(shop.walk_time) + '</span>'
+      + '<span class="meta-sep">·</span>'
+      + '<span class="shop-tag">' + escHtml(shop.tag) + '</span>'
+      + '</div>'
+      + (shop.reason ? '<span class="crowd-reason">' + escHtml(shop.reason) + '</span>' : '')
+      + '<p class="shop-comment">' + escHtml(shop.comment) + '</p>'
+      + '<p class="shop-address">' + escHtml(shop.address) + '</p>'
+      + '<div class="card-actions">'
+      + '<a href="' + escHtml(shop.map_url) + '" class="btn btn-outline" target="_blank" rel="noopener noreferrer">地図で見る</a>'
+      + '<a href="#" class="btn btn-primary">この店に行く →</a>'
+      + '</div></div>';
   }
 
   // ---- 現在地ソートで再描画 ----
 
   function renderByDistance(userLat, userLng) {
-    const sorted = SHOPS
-      .map(s => ({ ...s, _dist: haversine(userLat, userLng, s.latitude, s.longitude) }))
-      .sort((a, b) => a._dist - b._dist)
+    var sorted = SHOPS
+      .map(function (s) {
+        return Object.assign({}, s, { _dist: haversine(userLat, userLng, s.latitude, s.longitude) });
+      })
+      .sort(function (a, b) { return a._dist - b._dist; })
       .slice(0, MAX_DISPLAY);
 
     document.getElementById('shop-list').innerHTML =
-      sorted.map((s, i) => buildCard(s, i, fmtDist(s._dist))).join('');
+      sorted.map(function (s, i) { return buildCard(s, i, fmtDist(s._dist)); }).join('');
 
     document.getElementById('sub-text').textContent =
-      `現在地から近い順に${sorted.length}件を表示しています`;
+      '現在地から近い順に' + sorted.length + '件を表示しています';
 
     setStatus('ok', '📍 現在地から近い順に表示しています');
   }
@@ -178,7 +189,7 @@
   // ---- フォールバック ----
 
   function showFallback(reason) {
-    const msg = reason === 'denied'
+    var msg = reason === 'denied'
       ? '位置情報の取得が許可されていないため、池袋駅基準で表示しています'
       : '現在地を取得できなかったため、池袋駅基準で表示しています';
     setStatus('fallback', msg);
@@ -187,27 +198,40 @@
   // ---- ステータス表示 ----
 
   function setStatus(type, msg) {
-    const el = document.getElementById('location-status');
+    var el = document.getElementById('location-status');
     if (!el) return;
-    el.innerHTML = `<p class="location-note location-note--${type}">${msg}</p>`;
+    el.innerHTML = '<p class="location-note location-note--' + type + '">' + msg + '</p>';
   }
 
   // ---- エントリーポイント ----
 
-  // 「現在地から探す」で来た場合は取得中メッセージを先出し
   if (MODE === 'nearby') {
     setStatus('loading', '📡 現在地を取得中...');
+    setDebug('nearby confirmed / checking navigator.geolocation...');
   }
 
   if (navigator.geolocation) {
+    if (MODE === 'nearby') setDebug('geolocation API available');
     navigator.geolocation.getCurrentPosition(
-      pos => renderByDistance(pos.coords.latitude, pos.coords.longitude),
-      err => showFallback(err.code === 1 ? 'denied' : 'error'),
+      function (pos) {
+        var lat = pos.coords.latitude.toFixed(4);
+        var lng = pos.coords.longitude.toFixed(4);
+        if (MODE === 'nearby') setDebug('geolocation success  lat=' + lat + '  lng=' + lng, 'ok');
+        renderByDistance(pos.coords.latitude, pos.coords.longitude);
+      },
+      function (err) {
+        var codeMap = { 1: 'PERMISSION_DENIED', 2: 'POSITION_UNAVAILABLE', 3: 'TIMEOUT' };
+        var label = codeMap[err.code] || 'UNKNOWN';
+        if (MODE === 'nearby') setDebug('geolocation error  code=' + err.code + ' (' + label + ')  msg=' + err.message, 'err');
+        showFallback(err.code === 1 ? 'denied' : 'error');
+      },
       { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false }
     );
-  } else if (MODE === 'nearby') {
-    showFallback('error');
+  } else {
+    if (MODE === 'nearby') setDebug('geolocation API NOT available', 'err');
+    if (MODE === 'nearby') showFallback('error');
   }
+
 })();
 </script>
 

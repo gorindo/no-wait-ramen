@@ -166,6 +166,11 @@ body.result-page {
     background-color: #f7f5f2;
 }
 
+/* デバッグ帯がある場合はコンテンツを押し下げる */
+body.has-debug-bar {
+    padding-top: 40px;
+}
+
 .container {
     padding: 24px 16px 40px;
     max-width: 480px;
@@ -501,4 +506,34 @@ h1 {
     font-size: 12px;
     font-weight: 700;
     color: #1d4ed8;
+}
+
+/* ===========================
+   デバッグ帯（一時）
+=========================== */
+.debug-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #1e1e1e;
+    color: #e5e5e5;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    padding: 8px 14px;
+    word-break: break-all;
+    min-height: 36px;
+}
+
+.debug-bar[data-state="ok"] {
+    background: #14532d;
+    color: #bbf7d0;
+}
+
+.debug-bar[data-state="err"] {
+    background: #7f1d1d;
+    color: #fecaca;
 }
