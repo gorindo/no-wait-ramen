@@ -10,6 +10,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     background-color: #f5f5f5;
     line-height: 1.7;
+    overflow-x: hidden;
 }
 
 /* ===========================
@@ -47,7 +48,7 @@ body.index-page {
 .hero-overlay {
     position: relative;
     z-index: 1;
-    padding: 40px 28px;
+    padding: 40px 20px;
     width: 100%;
     max-width: 420px;
 }
@@ -72,15 +73,23 @@ body.index-page {
 .hero-copy {
     font-size: 15px;
     color: rgba(255,255,255,0.75);
-    margin: 0 0 30px;
+    margin: 0 0 24px;
     letter-spacing: 0.05em;
+}
+
+/* フィルタボタン群 */
+.filter-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
 }
 
 .hero-button {
     display: block;
     width: 100%;
-    padding: 22px 0;
-    font-size: 18px;
+    padding: 18px 0;
+    font-size: 17px;
     font-weight: 700;
     background: radial-gradient(ellipse at 50% 30%, #ffaa55 0%, #ff6b00 60%, #e85500 100%);
     color: white;
@@ -91,6 +100,21 @@ body.index-page {
         0 0 36px rgba(255, 130, 0, 0.3);
     letter-spacing: 0.04em;
     transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.hero-button--secondary {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: 2px solid rgba(255,255,255,0.5);
+}
+
+.hero-button--ghost {
+    background: transparent;
+    box-shadow: none;
+    border: 2px solid rgba(255,255,255,0.35);
+    color: rgba(255,255,255,0.8);
+    font-size: 15px;
+    padding: 14px 0;
 }
 
 .hero-button:hover {
@@ -120,6 +144,42 @@ h1 {
     margin-bottom: 6px;
 }
 
+.filter-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff6b00;
+    margin: 0 0 12px;
+}
+
+/* フィルタチップ（結果ページ） */
+.filter-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.filter-chip {
+    display: inline-block;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #ff6b00;
+    background: #fff;
+    border: 2px solid #ff6b00;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.filter-chip.active,
+.filter-chip:hover {
+    background: #ff6b00;
+    color: #fff;
+}
+
 .sub-text {
     font-size: 13px;
     color: #888;
@@ -127,11 +187,11 @@ h1 {
     margin-bottom: 20px;
 }
 
-.tagline {
+.no-result {
     font-size: 14px;
-    color: #666;
-    margin-top: 0;
-    margin-bottom: 8px;
+    color: #888;
+    margin: 40px 0;
+    line-height: 1.8;
 }
 
 /* メインボタン（result.html 用） */
