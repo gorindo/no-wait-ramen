@@ -5,6 +5,14 @@ app = Flask(__name__)
 # 表示件数の上限（将来的にここを変更するだけで調整可能）
 MAX_DISPLAY = 10
 
+# ソートキー: 営業中 > 待ちレベル(green/yellow/red) > 徒歩分数
+WAIT_LEVEL_ORDER = {"green": 0, "yellow": 1, "red": 2}
+
+def sort_key(shop):
+    is_closed = 0 if shop["is_open"] else 1
+    wait_order = WAIT_LEVEL_ORDER.get(shop["wait_level"], 9)
+    return (is_closed, wait_order, shop["walk_minutes"])
+
 # 仮データ（池袋駅徒歩圏）
 ramen_shops = [
     {
@@ -357,6 +365,9 @@ def result():
         max_walk = None
         filtered = ramen_shops
         filter_label = "池袋駅周辺の全店舗"
+
+    # 営業中・待ちレベル・徒歩分数の順でソート
+    filtered.sort(key=sort_key)
 
     total_count = len(filtered)
 

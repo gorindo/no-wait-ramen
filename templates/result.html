@@ -6,59 +6,71 @@
     <title>結果</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="result-page">
 
 <div class="container">
-    <h1>🍜 今すぐ入れる店</h1>
 
-    <p class="filter-label">📍 {{ filter_label }}</p>
-
-    <div class="filter-nav">
-        <a href="/result?max_walk=5" class="filter-chip{% if max_walk == 5 %} active{% endif %}">徒歩5分以内</a>
-        <a href="/result?max_walk=10" class="filter-chip{% if max_walk == 10 %} active{% endif %}">徒歩10分以内</a>
-        <a href="/result" class="filter-chip{% if max_walk is none %} active{% endif %}">すべて</a>
-    </div>
-
-    {% if shops %}
+    <header class="page-header">
+        <h1>今すぐ入れる店</h1>
+        <p class="filter-label">📍 {{ filter_label }}</p>
+        <div class="filter-nav">
+            <a href="/result?max_walk=5" class="filter-chip{% if max_walk == 5 %} active{% endif %}">徒歩5分以内</a>
+            <a href="/result?max_walk=10" class="filter-chip{% if max_walk == 10 %} active{% endif %}">徒歩10分以内</a>
+            <a href="/result" class="filter-chip{% if max_walk is none %} active{% endif %}">すべて</a>
+        </div>
         <p class="sub-text">
-            近い順に最大{{ max_display }}件を表示しています
+            営業中・待ち時間・近さをもとに最大{{ max_display }}件を表示
             {% if total_count > max_display %}（全{{ total_count }}件中）{% endif %}
         </p>
+    </header>
 
+    {% if shops %}
         {% for shop in shops %}
         <div class="card {{ shop.wait_level }}{% if loop.first %} card-top{% endif %}">
-            {% if loop.first %}<span class="recommend-badge">おすすめ</span>{% endif %}
-            <h2>{{ shop.name }}</h2>
 
-            {% if shop.wait_level == 'green' %}
-            <p class="wait-label">🟢 すぐ入れる</p>
-            {% elif shop.wait_level == 'yellow' %}
-            <p class="wait-label">🟡 5分以内</p>
-            {% elif shop.wait_level == 'red' %}
-            <p class="wait-label">🔴 注意</p>
-            {% endif %}
+            <div class="card-head">
+                <div class="card-head-left">
+                    {% if loop.first %}<span class="recommend-badge">おすすめ</span>{% endif %}
+                    <h2 class="shop-name">{{ shop.name }}</h2>
+                </div>
+                <div class="card-head-right">
+                    {% if shop.wait_level == 'green' %}
+                    <span class="wait-pill wait-pill--green">すぐ入れる</span>
+                    {% elif shop.wait_level == 'yellow' %}
+                    <span class="wait-pill wait-pill--yellow">少し待ち</span>
+                    {% elif shop.wait_level == 'red' %}
+                    <span class="wait-pill wait-pill--red">混雑中</span>
+                    {% endif %}
+                </div>
+            </div>
 
-            {% if shop.is_open %}
-            <p class="open-status open">● 営業中</p>
-            {% else %}
-            <p class="open-status closed">● 営業時間外</p>
-            {% endif %}
-
-            <p class="shop-meta">🚶 {{ shop.walk_time }}</p>
-            <span class="shop-tag">{{ shop.tag }}</span>
+            <div class="card-meta">
+                {% if shop.is_open %}
+                <span class="open-status open">● 営業中</span>
+                {% else %}
+                <span class="open-status closed">● 営業時間外</span>
+                {% endif %}
+                <span class="meta-sep">·</span>
+                <span class="walk-text">🚶 {{ shop.walk_time }}</span>
+                <span class="meta-sep">·</span>
+                <span class="shop-tag">{{ shop.tag }}</span>
+            </div>
 
             <p class="shop-comment">{{ shop.comment }}</p>
-            <p class="shop-address">📍 {{ shop.address }}</p>
+            <p class="shop-address">{{ shop.address }}</p>
 
-            <a href="{{ shop.map_url }}" class="map-button" target="_blank" rel="noopener noreferrer">地図で見る</a>
-            <a href="#" class="go-button">この店に行く →</a>
+            <div class="card-actions">
+                <a href="{{ shop.map_url }}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">地図で見る</a>
+                <a href="#" class="btn btn-primary">この店に行く →</a>
+            </div>
+
         </div>
         {% endfor %}
     {% else %}
-        <p class="no-result">この範囲内の店舗が見つかりませんでした。<br>条件を広げて検索してみてください。</p>
+        <p class="no-result">この範囲内の店舗が見つかりませんでした。<br>条件を広げてみてください。</p>
     {% endif %}
 
-    <a href="/" class="back-button">← 戻る</a>
+    <a href="/" class="back-button">← 条件を変える</a>
 </div>
 
 </body>
