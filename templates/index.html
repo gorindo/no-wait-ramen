@@ -16,8 +16,13 @@
         <p class="hero-copy">今すぐ、空席に滑り込め。</p>
 
         <div class="filter-buttons">
-            <a href="/result?max_walk=5" class="hero-button">徒歩5分以内</a>
-            <a href="/result?max_walk=10" class="hero-button hero-button--secondary">徒歩10分以内</a>
+            <a href="/result?mode=nearby" class="hero-button hero-button--location">
+                📍 いま近い店を見る
+            </a>
+            <div class="filter-buttons-sub">
+                <a href="/result?max_walk=5" class="hero-button hero-button--secondary hero-button--half">徒歩5分以内</a>
+                <a href="/result?max_walk=10" class="hero-button hero-button--secondary hero-button--half">徒歩10分以内</a>
+            </div>
             <a href="/result" class="hero-button hero-button--ghost">すべて見る</a>
         </div>
 
