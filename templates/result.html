@@ -15,8 +15,10 @@
 
     <header class="page-header">
         <h1>今すぐ入れる店</h1>
-        <p class="filter-label">📍 {{ filter_label }}</p>
+        <p class="area-chip">{{ area_name }} ▼</p>
+        <p class="filter-label">{{ filter_label }}</p>
 
+        <p class="filter-hint">条件を変える</p>
         <div class="filter-nav">
             <a href="/result?max_walk=5"
                class="filter-chip{% if max_walk == 5 %} active{% endif %}">徒歩5分以内</a>
@@ -35,13 +37,20 @@
         </p>
     </header>
 
-    {% if shops %}
+    {% if featured_shop %}
 
-    {# ---- おすすめ枠（1位） ---- #}
+    {# ---- おすすめ枠 ---- #}
     <div class="featured-section">
-        <p class="featured-label">🔥 今行くならここ</p>
+        {% if featured_shop.wait_level == 'green' %}
+        <p class="featured-label" id="featured-label">🔥 今行くならここ</p>
+        {% elif featured_shop.wait_level == 'yellow' %}
+        <p class="featured-label" id="featured-label">✨ 今ならこの店が有力</p>
+        {% else %}
+        <p class="featured-label" id="featured-label">👀 候補の中ではこの店</p>
+        {% endif %}
+        <p class="featured-hint">待ち時間・近さ・更新をもとにおすすめ</p>
         <div id="featured-card">
-        {% set shop = shops[0] %}
+        {% set shop = featured_shop %}
         <div class="card {{ shop.wait_level }} card-top">
             <div class="card-head">
                 <div class="card-head-left">
@@ -92,12 +101,12 @@
         </div>
     </div>
 
-    {# ---- 他の候補（2位以降） ---- #}
-    {% if shops|length > 1 %}
+    {# ---- 他の候補 ---- #}
+    {% if other_shops %}
     <div class="candidates-section">
         <p class="candidates-label">他の候補</p>
         <div id="shop-list">
-            {% for shop in shops[1:] %}
+            {% for shop in other_shops %}
             <div class="card {{ shop.wait_level }}">
                 <div class="card-head">
                     <div class="card-head-left">
@@ -156,7 +165,6 @@
     </div>
     {% endif %}
 
-    <a href="/" class="back-button">← 条件を変える</a>
 </div>
 
 <script>
@@ -202,10 +210,29 @@
     return '約' + (m / 1000).toFixed(1) + 'km';
   }
 
+  // ---- おすすめスコア（JS版、サーバー側と同じロジック） ----
+
+  var SCORE_BY_WAIT = { green: 300, yellow: 30, red: -100 };
+
+  function shopScore(shop, distMeters) {
+    var score = SCORE_BY_WAIT[shop.wait_level] || 0;
+    // 距離：300m以内で最大+15、遠くなるほど逓減
+    score += Math.max(0, 15 - distMeters / 100);
+    // 更新の新しさ：20分以内を加点（最大+10）
+    score += Math.max(0, (20 - shop.updated_minutes_ago) * 0.5);
+    // 報告傾向
+    var summary = shop.report_summary || '';
+    if (summary.indexOf('空いてた') >= 0) {
+      score += 10;
+    } else if (summary.indexOf('混んでた') >= 0 || summary.indexOf('やや混み') >= 0) {
+      score -= 10;
+    }
+    return score;
+  }
+
   // ---- カード HTML 生成 ----
 
   var WAIT_LABEL = { green: '今すぐ入れる', yellow: '5〜10分待ち', red: '10分以上待ち' };
-  var WAIT_ORDER = { green: 0, yellow: 1, red: 2 };
   var CHIP_LEVEL = { '空いてた': 'green', '少し待った': 'yellow', '混んでた': 'red' };
 
   function buildCard(shop, index, distText) {
@@ -213,9 +240,10 @@
     var topCls  = isFirst ? ' card-top' : '';
     var badge   = isFirst ? '<span class="recommend-badge">おすすめ</span>' : '';
     var pill    = WAIT_LABEL[shop.wait_level] || '';
-    var distHtml = distText
-      ? '<span class="distance-text">📍 現在地から' + escHtml(distText) + '</span><span class="meta-sep">·</span>'
-      : '';
+    // 現在地モード：「現在地から◯m」のみ / 通常モード：「🚶 池袋駅から徒歩◯分」のみ
+    var walkHtml = distText
+      ? '<span class="distance-text">📍 現在地から' + escHtml(distText) + '</span>'
+      : '<span class="walk-text">🚶 ' + escHtml(shop.walk_time) + '</span>';
     var reasonHtml = shop.reason
       ? '<p class="wait-reason">' + escHtml(shop.reason) + '</p>'
       : '';
@@ -228,8 +256,8 @@
       + '<div class="card-head-left">' + badge + '<h2 class="shop-name">' + escHtml(shop.name) + '</h2></div>'
       + '<div class="card-head-right"><span class="wait-pill wait-pill--' + escHtml(shop.wait_level) + '">' + pill + '</span></div>'
       + '</div>'
-      + '<div class="card-meta">' + distHtml
-      + '<span class="walk-text">🚶 ' + escHtml(shop.walk_time) + '</span>'
+      + '<div class="card-meta">'
+      + walkHtml
       + '<span class="meta-sep">·</span>'
       + '<span class="shop-tag">' + escHtml(shop.tag) + '</span>'
       + '</div>'
@@ -266,24 +294,27 @@
   // ---- 現在地ソートで再描画 ----
 
   function renderByDistance(userLat, userLng) {
-    var sorted = SHOPS
-      .map(function (s) {
-        return Object.assign({}, s, { _dist: haversine(userLat, userLng, s.latitude, s.longitude) });
-      })
-      .sort(function (a, b) {
-        var wa = WAIT_ORDER[a.wait_level] !== undefined ? WAIT_ORDER[a.wait_level] : 9;
-        var wb = WAIT_ORDER[b.wait_level] !== undefined ? WAIT_ORDER[b.wait_level] : 9;
-        if (wa !== wb) return wa - wb;
-        return a._dist - b._dist;
-      })
-      .slice(0, MAX_DISPLAY);
+    var withDist = SHOPS.map(function (s) {
+      return Object.assign({}, s, { _dist: haversine(userLat, userLng, s.latitude, s.longitude) });
+    });
+
+    // おすすめスコアで降順ソート → 上位 MAX_DISPLAY 件
+    withDist.sort(function (a, b) {
+      return shopScore(b, b._dist) - shopScore(a, a._dist);
+    });
+    var sorted = withDist.slice(0, MAX_DISPLAY);
 
     if (sorted.length > 0) {
       document.getElementById('featured-card').innerHTML = buildCard(sorted[0], 0, fmtDist(sorted[0]._dist));
+      var FEATURED_LABEL = { green: '🔥 今行くならここ', yellow: '✨ 今ならこの店が有力', red: '👀 候補の中ではこの店' };
+      var labelEl = document.getElementById('featured-label');
+      if (labelEl) labelEl.textContent = FEATURED_LABEL[sorted[0].wait_level] || '🔥 今行くならここ';
     }
     var shopList = document.getElementById('shop-list');
     if (shopList) {
-      shopList.innerHTML = sorted.slice(1).map(function (s, i) { return buildCard(s, i + 1, fmtDist(s._dist)); }).join('');
+      shopList.innerHTML = sorted.slice(1).map(function (s, i) {
+        return buildCard(s, i + 1, fmtDist(s._dist));
+      }).join('');
     }
 
     document.getElementById('sub-text').textContent =

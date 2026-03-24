@@ -75,6 +75,13 @@ body.index-page {
     letter-spacing: 0.05em;
 }
 
+.hero-area {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    margin: 4px 0 14px;
+    letter-spacing: 0.06em;
+}
+
 .hero-sub {
     font-size: 13px;
     color: rgba(255,255,255,0.6);
@@ -186,12 +193,35 @@ h1 {
     margin: 0 0 6px;
 }
 
+.area-chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    background: #f0ede9;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 3px 10px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    cursor: default;
+    margin: 4px 0 10px;
+}
+
 .filter-label {
     font-size: 13px;
     font-weight: 600;
     color: #c05a00;
     letter-spacing: 0.02em;
     margin: 0 0 14px;
+}
+
+.filter-hint {
+    font-size: 10px;
+    color: #bbb;
+    letter-spacing: 0.06em;
+    margin: 0 0 6px;
+    text-transform: uppercase;
 }
 
 .filter-nav {
@@ -310,8 +340,8 @@ h1 {
 }
 
 .shop-name {
-    font-size: 19px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     color: #111;
     margin: 0;
     line-height: 1.3;
@@ -322,9 +352,9 @@ h1 {
 /* 待ち時間ピル */
 .wait-pill {
     display: inline-block;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
-    padding: 5px 11px;
+    padding: 6px 13px;
     border-radius: 50px;
     letter-spacing: 0.02em;
     white-space: nowrap;
@@ -380,7 +410,7 @@ h1 {
 
 /* コメント・住所 */
 .shop-comment {
-    font-size: 14px;
+    font-size: 15px;
     color: #333;
     margin: 0 0 4px;
     line-height: 1.5;
@@ -506,8 +536,8 @@ h1 {
 .btn {
     flex: 1;
     display: block;
-    padding: 11px 8px;
-    font-size: 13px;
+    padding: 13px 8px;
+    font-size: 15px;
     font-weight: 700;
     text-align: center;
     text-decoration: none;
@@ -543,20 +573,6 @@ h1 {
     background: #e85f00;
 }
 
-/* 戻るリンク */
-.back-button {
-    display: block;
-    margin-top: 28px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 13px;
-    color: #999;
-    letter-spacing: 0.02em;
-}
-
-.back-button:hover {
-    color: #555;
-}
 
 /* ===========================
    現在地ステータス・距離表示
@@ -589,9 +605,9 @@ h1 {
 }
 
 .distance-text {
-    font-size: 12px;
-    font-weight: 700;
-    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 400;
+    color: #888;
 }
 
 /* ===========================
@@ -614,6 +630,13 @@ h1 {
     color: #ff6b00;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+    margin: 0 0 4px;
+}
+
+.featured-hint {
+    font-size: 10px;
+    color: #bbb;
+    letter-spacing: 0.03em;
     margin: 0 0 12px;
 }
 

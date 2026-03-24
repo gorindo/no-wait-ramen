@@ -7,6 +7,9 @@ app = Flask(__name__)
 # 表示件数の上限（将来的にここを変更するだけで調整可能）
 MAX_DISPLAY = 10
 
+# 対象エリア名（将来の多地域展開時にここを変更 or リスト化する）
+AREA_NAME = "池袋"
+
 # ソートキー: 営業中 > 待ちレベル(green/yellow/red) > 徒歩分数
 WAIT_LEVEL_ORDER = {"green": 0, "yellow": 1, "red": 2}
 
@@ -14,6 +17,42 @@ def sort_key(shop):
     is_closed = 0 if shop["is_open"] else 1
     wait_order = WAIT_LEVEL_ORDER.get(shop["wait_level"], 9)
     return (is_closed, wait_order, shop["walk_minutes"])
+
+
+# ============================================================
+# おすすめスコア計算
+# ============================================================
+# 「今行くならここ」選定用。待ち時間を最重要とし、
+# 距離・更新の新しさ・報告傾向を補助的に加点減点する。
+#
+# 加点の目安:
+#   wait_level green  : +100
+#   wait_level yellow : +40
+#   wait_level red    : -50
+#   距離（徒歩）      : 最大 +15（walk_minutes が少ないほど有利）
+#   更新の新しさ      : 最大 +10（20分以内の更新を優遇）
+#   報告傾向          : 空いてた +10 / 混んでた or やや混み -10
+# ============================================================
+
+SCORE_BY_WAIT = {"green": 300, "yellow": 30, "red": -100}
+
+def compute_recommend_score(shop):
+    score = SCORE_BY_WAIT.get(shop["wait_level"], 0)
+
+    # 距離：徒歩分数が少ないほど加点（最大 +15）
+    score += max(0, 15 - shop["walk_minutes"])
+
+    # 更新の新しさ：20分以内を加点（最大 +10）
+    score += max(0, (20 - shop["updated_minutes_ago"]) * 0.5)
+
+    # 報告傾向
+    summary = shop.get("report_summary") or ""
+    if "空いてた" in summary:
+        score += 10
+    elif "混んでた" in summary or "やや混み" in summary:
+        score -= 10
+
+    return score
 
 
 # ============================================================
@@ -708,7 +747,7 @@ ramen_shops = [
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", area_name=AREA_NAME)
 
 
 @app.route("/result")
@@ -723,6 +762,7 @@ def result():
         s = dict(shop)
         s["wait_level"], s["reason"] = compute_wait_level(s, now)
         s["route_url"] = "https://www.google.com/maps/dir/?api=1&destination=" + quote(s["address"]) + "&travelmode=walking"
+        s["area"] = s.get("area", AREA_NAME)
         enriched.append(s)
 
     # 徒歩圏フィルタ
@@ -747,15 +787,25 @@ def result():
     # 表示件数を上限に制限（MAX_DISPLAY を変更するだけで調整可能）
     displayed = filtered[:MAX_DISPLAY]
 
+    # おすすめスコアで「今行くならここ」店舗を選定
+    if displayed:
+        featured_shop = max(displayed, key=compute_recommend_score)
+        other_shops   = [s for s in displayed if s is not featured_shop]
+    else:
+        featured_shop = None
+        other_shops   = []
+
     return render_template(
         "result.html",
-        shops=displayed,
+        featured_shop=featured_shop,
+        other_shops=other_shops,
         all_shops_json=filtered,   # JS の現在地ソートに使用（全件・フィルタ済み）
         filter_label=filter_label,
         max_walk=max_walk,
         mode=mode,
         total_count=total_count,
-        max_display=MAX_DISPLAY
+        max_display=MAX_DISPLAY,
+        area_name=AREA_NAME,
     )
 
 
