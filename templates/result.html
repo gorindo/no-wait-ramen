@@ -14,11 +14,18 @@
 <div class="container">
 
     <header class="page-header">
-        <h1>今すぐ入れる店</h1>
+        <h1><a href="/" class="title-home-link">今すぐ入れる店</a></h1>
         <p class="area-chip">{{ area_name }} ▼</p>
         <p class="filter-label">{{ filter_label }}</p>
+        <div id="location-status"></div>
+        <div id="area-notice" hidden></div>
+        <p id="sub-text" class="sub-text">
+            待ち時間・近さをもとに最大{{ max_display }}件を表示
+            {% if total_count > max_display %}（全{{ total_count }}件中）{% endif %}
+        </p>
+    </header>
 
-        <p class="filter-hint">条件を変える</p>
+    <div class="filter-sticky">
         <div class="filter-nav">
             <a href="/result?max_walk=5"
                class="filter-chip{% if max_walk == 5 %} active{% endif %}">徒歩5分以内</a>
@@ -27,15 +34,7 @@
             <a href="/result"
                class="filter-chip{% if max_walk is none %} active{% endif %}">すべて</a>
         </div>
-
-        <div id="location-status"></div>
-        <div id="area-notice" hidden></div>
-
-        <p id="sub-text" class="sub-text">
-            待ち時間・近さをもとに最大{{ max_display }}件を表示
-            {% if total_count > max_display %}（全{{ total_count }}件中）{% endif %}
-        </p>
-    </header>
+    </div>
 
     {% if featured_shop %}
 
