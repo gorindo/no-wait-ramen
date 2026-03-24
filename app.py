@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import quote
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -92,35 +93,35 @@ def compute_wait_level(shop, now=None):
     # ---- reason ラベル生成（短文・判断補助） ----
     if level == "green":
         if fast and is_peak:
-            reason = "回転が早いので入りやすい"
+            reason = "回転が早く、比較的すぐ座れる"
         elif not is_weekend and 14.0 <= t < 17.0:
-            reason = "アイドルタイムで狙い目"
+            reason = "今の時間は空いていることが多い"
         elif is_weekend and not is_peak:
-            reason = "土日でも今は空きやすい"
+            reason = "土日でもこの時間は並ばず入れることが多い"
         else:
-            reason = "ピーク外で入りやすい"
+            reason = "今なら並ばず入れる可能性が高い"
     elif level == "yellow":
         if fast:
-            reason = "少し混雑・ただし回転早め"
+            reason = "少し待つが、席は比較的早く空きやすい"
         elif is_weekend and is_peak:
-            reason = "土日ピークで少し並ぶかも"
+            reason = "週末ピーク中のため、5〜10分待つかも"
         elif is_peak:
-            reason = "ピーク時間帯・少し待ちあり"
+            reason = "ピーク中のため、5〜10分待ちになることが多い"
         elif pop >= 2:
-            reason = "人気店のため並ぶことあり"
+            reason = "人気店のため、少し並ぶ可能性がある"
         else:
-            reason = "少し並ぶ可能性あり"
+            reason = "5〜10分待つことが多い"
     else:  # red
         if pop >= 3 and is_peak:
-            reason = "超人気店・混雑ピーク帯"
+            reason = "超人気店のピーク帯、行列は避けにくい"
         elif pop >= 3:
-            reason = "超人気店・常に並びやすい"
+            reason = "常に行列が出やすい人気店"
         elif is_weekend and is_peak:
-            reason = "土日の混雑ピーク帯"
+            reason = "週末ピーク帯、相当の待ちが予想される"
         elif is_peak:
-            reason = "ピーク時間帯・待ち確実"
+            reason = "今の時間帯は10分以上の待ちになりやすい"
         else:
-            reason = "人気店・ピーク外でも混みがち"
+            reason = "ピーク外でも混みやすく、長め待ちになることが多い"
 
     return level, reason
 
@@ -721,6 +722,7 @@ def result():
     for shop in ramen_shops:
         s = dict(shop)
         s["wait_level"], s["reason"] = compute_wait_level(s, now)
+        s["route_url"] = "https://www.google.com/maps/dir/?api=1&destination=" + quote(s["address"]) + "&travelmode=walking"
         enriched.append(s)
 
     # 徒歩圏フィルタ

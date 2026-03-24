@@ -35,14 +35,72 @@
         </p>
     </header>
 
-    <div id="shop-list">
-        {% if shops %}
-            {% for shop in shops %}
-            <div class="card {{ shop.wait_level }}{% if loop.first %} card-top{% endif %}">
+    {% if shops %}
 
+    {# ---- おすすめ枠（1位） ---- #}
+    <div class="featured-section">
+        <p class="featured-label">🔥 今行くならここ</p>
+        <div id="featured-card">
+        {% set shop = shops[0] %}
+        <div class="card {{ shop.wait_level }} card-top">
+            <div class="card-head">
+                <div class="card-head-left">
+                    <span class="recommend-badge">おすすめ</span>
+                    <h2 class="shop-name">{{ shop.name }}</h2>
+                </div>
+                <div class="card-head-right">
+                    {% if shop.wait_level == 'green' %}
+                    <span class="wait-pill wait-pill--green">今すぐ入れる</span>
+                    {% elif shop.wait_level == 'yellow' %}
+                    <span class="wait-pill wait-pill--yellow">5〜10分待ち</span>
+                    {% elif shop.wait_level == 'red' %}
+                    <span class="wait-pill wait-pill--red">10分以上待ち</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-meta">
+                <span class="walk-text">🚶 {{ shop.walk_time }}</span>
+                <span class="meta-sep">·</span>
+                <span class="shop-tag">{{ shop.tag }}</span>
+            </div>
+            {% if shop.reason %}
+            <p class="wait-reason">{{ shop.reason }}</p>
+            {% endif %}
+            <p class="shop-comment">{{ shop.comment }}</p>
+            <p class="shop-address">{{ shop.address }}</p>
+            <div class="card-report">
+                <div class="card-report-meta">
+                    <span class="updated-time">更新 {{ shop.updated_minutes_ago }}分前</span>
+                    {% if shop.report_summary %}
+                    <span class="report-summary">{{ shop.report_summary }}</span>
+                    {% endif %}
+                </div>
+                <div class="report-row">
+                    <span class="report-label">報告する</span>
+                    <div class="report-chips">
+                        <button class="report-chip" type="button">空いてた</button>
+                        <button class="report-chip" type="button">少し待った</button>
+                        <button class="report-chip" type="button">混んでた</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <a href="{{ shop.map_url }}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">地図で見る</a>
+                <a href="{{ shop.route_url }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">ここへ行く →</a>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    {# ---- 他の候補（2位以降） ---- #}
+    {% if shops|length > 1 %}
+    <div class="candidates-section">
+        <p class="candidates-label">他の候補</p>
+        <div id="shop-list">
+            {% for shop in shops[1:] %}
+            <div class="card {{ shop.wait_level }}">
                 <div class="card-head">
                     <div class="card-head-left">
-                        {% if loop.first %}<span class="recommend-badge">おすすめ</span>{% endif %}
                         <h2 class="shop-name">{{ shop.name }}</h2>
                     </div>
                     <div class="card-head-right">
@@ -55,19 +113,16 @@
                         {% endif %}
                     </div>
                 </div>
-
                 <div class="card-meta">
                     <span class="walk-text">🚶 {{ shop.walk_time }}</span>
                     <span class="meta-sep">·</span>
                     <span class="shop-tag">{{ shop.tag }}</span>
                 </div>
-
                 {% if shop.reason %}
                 <p class="wait-reason">{{ shop.reason }}</p>
                 {% endif %}
                 <p class="shop-comment">{{ shop.comment }}</p>
                 <p class="shop-address">{{ shop.address }}</p>
-
                 <div class="card-report">
                     <div class="card-report-meta">
                         <span class="updated-time">更新 {{ shop.updated_minutes_ago }}分前</span>
@@ -84,18 +139,22 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card-actions">
                     <a href="{{ shop.map_url }}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">地図で見る</a>
-                    <a href="#" class="btn btn-primary">この店に行く →</a>
+                    <a href="{{ shop.route_url }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">ここへ行く →</a>
                 </div>
-
             </div>
             {% endfor %}
-        {% else %}
-            <p class="no-result">この条件に合う営業中の店舗が見つかりませんでした。<br>条件を広げてみてください。</p>
-        {% endif %}
+        </div>
     </div>
+    {% endif %}
+
+    {% else %}
+    <div id="featured-card"></div>
+    <div id="shop-list">
+        <p class="no-result">この条件に合う営業中の店舗が見つかりませんでした。<br>条件を広げてみてください。</p>
+    </div>
+    {% endif %}
 
     <a href="/" class="back-button">← 条件を変える</a>
 </div>
@@ -146,6 +205,7 @@
   // ---- カード HTML 生成 ----
 
   var WAIT_LABEL = { green: '今すぐ入れる', yellow: '5〜10分待ち', red: '10分以上待ち' };
+  var WAIT_ORDER = { green: 0, yellow: 1, red: 2 };
   var CHIP_LEVEL = { '空いてた': 'green', '少し待った': 'yellow', '混んでた': 'red' };
 
   function buildCard(shop, index, distText) {
@@ -190,7 +250,7 @@
       + '</div></div></div>'
       + '<div class="card-actions">'
       + '<a href="' + escHtml(shop.map_url) + '" class="btn btn-outline" target="_blank" rel="noopener noreferrer">地図で見る</a>'
-      + '<a href="#" class="btn btn-primary">この店に行く →</a>'
+      + '<a href="' + escHtml(shop.route_url) + '" class="btn btn-primary" target="_blank" rel="noopener noreferrer">ここへ行く →</a>'
       + '</div></div>';
   }
 
@@ -210,11 +270,21 @@
       .map(function (s) {
         return Object.assign({}, s, { _dist: haversine(userLat, userLng, s.latitude, s.longitude) });
       })
-      .sort(function (a, b) { return a._dist - b._dist; })
+      .sort(function (a, b) {
+        var wa = WAIT_ORDER[a.wait_level] !== undefined ? WAIT_ORDER[a.wait_level] : 9;
+        var wb = WAIT_ORDER[b.wait_level] !== undefined ? WAIT_ORDER[b.wait_level] : 9;
+        if (wa !== wb) return wa - wb;
+        return a._dist - b._dist;
+      })
       .slice(0, MAX_DISPLAY);
 
-    document.getElementById('shop-list').innerHTML =
-      sorted.map(function (s, i) { return buildCard(s, i, fmtDist(s._dist)); }).join('');
+    if (sorted.length > 0) {
+      document.getElementById('featured-card').innerHTML = buildCard(sorted[0], 0, fmtDist(sorted[0]._dist));
+    }
+    var shopList = document.getElementById('shop-list');
+    if (shopList) {
+      shopList.innerHTML = sorted.slice(1).map(function (s, i) { return buildCard(s, i + 1, fmtDist(s._dist)); }).join('');
+    }
 
     document.getElementById('sub-text').textContent =
       '現在地から近い順に' + sorted.length + '件を表示しています';
