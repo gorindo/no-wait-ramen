@@ -6,11 +6,7 @@
     <title>結果</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="result-page{% if mode == 'nearby' %} has-debug-bar{% endif %}">
-
-{% if mode == 'nearby' %}
-<div id="debug-bar" class="debug-bar">DEBUG: nearby mode active</div>
-{% endif %}
+<body class="result-page">
 
 {# script type="application/json" はブラウザに実行されず、tojson は </script> を unicode エスケープするため安全 #}
 <script type="application/json" id="app-data">{{ {"shops": all_shops_json, "maxDisplay": max_display, "mode": mode} | tojson }}</script>
@@ -31,6 +27,7 @@
         </div>
 
         <div id="location-status"></div>
+        <div id="area-notice" hidden></div>
 
         <p id="sub-text" class="sub-text">
             待ち時間・近さをもとに最大{{ max_display }}件を表示
@@ -50,11 +47,11 @@
                     </div>
                     <div class="card-head-right">
                         {% if shop.wait_level == 'green' %}
-                        <span class="wait-pill wait-pill--green">すぐ入れる</span>
+                        <span class="wait-pill wait-pill--green">今すぐ入れる</span>
                         {% elif shop.wait_level == 'yellow' %}
-                        <span class="wait-pill wait-pill--yellow">少し待つ</span>
+                        <span class="wait-pill wait-pill--yellow">5〜10分待ち</span>
                         {% elif shop.wait_level == 'red' %}
-                        <span class="wait-pill wait-pill--red">待つかも</span>
+                        <span class="wait-pill wait-pill--red">10分以上待ち</span>
                         {% endif %}
                     </div>
                 </div>
@@ -65,9 +62,28 @@
                     <span class="shop-tag">{{ shop.tag }}</span>
                 </div>
 
-                <span class="crowd-reason">{{ shop.reason }}</span>
+                {% if shop.reason %}
+                <p class="wait-reason">{{ shop.reason }}</p>
+                {% endif %}
                 <p class="shop-comment">{{ shop.comment }}</p>
                 <p class="shop-address">{{ shop.address }}</p>
+
+                <div class="card-report">
+                    <div class="card-report-meta">
+                        <span class="updated-time">更新 {{ shop.updated_minutes_ago }}分前</span>
+                        {% if shop.report_summary %}
+                        <span class="report-summary">{{ shop.report_summary }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="report-row">
+                        <span class="report-label">報告する</span>
+                        <div class="report-chips">
+                            <button class="report-chip" type="button">空いてた</button>
+                            <button class="report-chip" type="button">少し待った</button>
+                            <button class="report-chip" type="button">混んでた</button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card-actions">
                     <a href="{{ shop.map_url }}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">地図で見る</a>
@@ -87,25 +103,18 @@
 <script>
 (function () {
 
-  // ---- デバッグ帯の更新 ----
-
-  function setDebug(msg, state) {
-    var bar = document.getElementById('debug-bar');
-    if (!bar) return;
-    bar.textContent = 'DEBUG: ' + msg;
-    bar.dataset.state = state || '';
-  }
-
-  setDebug('js loaded');
-
   // ---- データ読み込み ----
 
-  var appData = JSON.parse(document.getElementById('app-data').textContent);
+  var appData     = JSON.parse(document.getElementById('app-data').textContent);
   var SHOPS       = appData.shops;
   var MAX_DISPLAY = appData.maxDisplay;
   var MODE        = appData.mode;
 
-  setDebug('js loaded  shops=' + SHOPS.length + '  mode=' + MODE);
+  // ---- 池袋駅の座標・エリア判定しきい値 ----
+
+  var IKEBUKURO_LAT  = 35.7295;
+  var IKEBUKURO_LNG  = 139.7109;
+  var AREA_THRESHOLD = 2000;
 
   // ---- ユーティリティ ----
 
@@ -117,7 +126,6 @@
       .replace(/"/g, '&quot;');
   }
 
-  // Haversine 距離計算（メートル）
   function haversine(lat1, lng1, lat2, lng2) {
     var R = 6371000;
     var r = Math.PI / 180;
@@ -137,7 +145,8 @@
 
   // ---- カード HTML 生成 ----
 
-  var WAIT_LABEL = { green: 'すぐ入れる', yellow: '少し待つ', red: '待つかも' };
+  var WAIT_LABEL = { green: '今すぐ入れる', yellow: '5〜10分待ち', red: '10分以上待ち' };
+  var CHIP_LEVEL = { '空いてた': 'green', '少し待った': 'yellow', '混んでた': 'red' };
 
   function buildCard(shop, index, distText) {
     var isFirst = index === 0;
@@ -146,6 +155,12 @@
     var pill    = WAIT_LABEL[shop.wait_level] || '';
     var distHtml = distText
       ? '<span class="distance-text">📍 現在地から' + escHtml(distText) + '</span><span class="meta-sep">·</span>'
+      : '';
+    var reasonHtml = shop.reason
+      ? '<p class="wait-reason">' + escHtml(shop.reason) + '</p>'
+      : '';
+    var summaryHtml = shop.report_summary
+      ? '<span class="report-summary">' + escHtml(shop.report_summary) + '</span>'
       : '';
 
     return '<div class="card ' + escHtml(shop.wait_level) + topCls + '">'
@@ -158,13 +173,34 @@
       + '<span class="meta-sep">·</span>'
       + '<span class="shop-tag">' + escHtml(shop.tag) + '</span>'
       + '</div>'
-      + (shop.reason ? '<span class="crowd-reason">' + escHtml(shop.reason) + '</span>' : '')
+      + reasonHtml
       + '<p class="shop-comment">' + escHtml(shop.comment) + '</p>'
       + '<p class="shop-address">' + escHtml(shop.address) + '</p>'
+      + '<div class="card-report">'
+      + '<div class="card-report-meta">'
+      + '<span class="updated-time">更新 ' + escHtml(String(shop.updated_minutes_ago)) + '分前</span>'
+      + summaryHtml
+      + '</div>'
+      + '<div class="report-row">'
+      + '<span class="report-label">報告する</span>'
+      + '<div class="report-chips">'
+      + '<button class="report-chip" type="button">空いてた</button>'
+      + '<button class="report-chip" type="button">少し待った</button>'
+      + '<button class="report-chip" type="button">混んでた</button>'
+      + '</div></div></div>'
       + '<div class="card-actions">'
       + '<a href="' + escHtml(shop.map_url) + '" class="btn btn-outline" target="_blank" rel="noopener noreferrer">地図で見る</a>'
       + '<a href="#" class="btn btn-primary">この店に行く →</a>'
       + '</div></div>';
+  }
+
+  // ---- エリア外通知 ----
+
+  function showAreaNotice(distToIkebukuro) {
+    var el = document.getElementById('area-notice');
+    if (!el) return;
+    el.textContent = '現在地から池袋まで約' + fmtDist(distToIkebukuro) + 'あります。池袋周辺の店を現在地からの距離順で表示しています。';
+    el.hidden = false;
   }
 
   // ---- 現在地ソートで再描画 ----
@@ -184,6 +220,11 @@
       '現在地から近い順に' + sorted.length + '件を表示しています';
 
     setStatus('ok', '📍 現在地から近い順に表示しています');
+
+    var distToIkebukuro = haversine(userLat, userLng, IKEBUKURO_LAT, IKEBUKURO_LNG);
+    if (distToIkebukuro > AREA_THRESHOLD) {
+      showAreaNotice(distToIkebukuro);
+    }
   }
 
   // ---- フォールバック ----
@@ -203,33 +244,81 @@
     el.innerHTML = '<p class="location-note location-note--' + type + '">' + msg + '</p>';
   }
 
+  // ---- 報告チップ：選択フィードバック ----
+
+  document.addEventListener('click', function (e) {
+    var chip = e.target;
+    if (!chip.classList.contains('report-chip')) return;
+
+    // 選択 / 非選択スタイルを切り替え
+    var chipsEl = chip.parentNode; // .report-chips
+    var siblings = chipsEl.querySelectorAll('.report-chip');
+    for (var i = 0; i < siblings.length; i++) {
+      siblings[i].classList.remove('report-chip--selected', 'report-chip--dimmed');
+    }
+    chip.classList.add('report-chip--selected');
+    for (var i = 0; i < siblings.length; i++) {
+      if (siblings[i] !== chip) siblings[i].classList.add('report-chip--dimmed');
+    }
+
+    // 一時的な待ち状態の仮反映
+    var chipText = chip.textContent.trim();
+    var newLevel = CHIP_LEVEL[chipText];
+    if (newLevel) {
+      var card = chipsEl.closest('.card');
+      card.classList.remove('green', 'yellow', 'red');
+      card.classList.add(newLevel);
+      var pill = card.querySelector('.wait-pill');
+      if (pill) {
+        pill.className = 'wait-pill wait-pill--' + newLevel;
+        pill.textContent = WAIT_LABEL[newLevel];
+      }
+      var tempNote = card.querySelector('.temp-note');
+      if (!tempNote) {
+        tempNote = document.createElement('span');
+        tempNote.className = 'temp-note';
+        var pillContainer = card.querySelector('.card-head-right');
+        if (pillContainer) pillContainer.appendChild(tempNote);
+      }
+      tempNote.textContent = 'この画面で一時反映中';
+    }
+
+    // お礼メッセージを表示（.card-report 内に挿入または再利用）
+    var cardReport = chipsEl.closest('.card-report');
+    var thanks = cardReport.querySelector('.report-thanks');
+    if (!thanks) {
+      thanks = document.createElement('p');
+      thanks.className = 'report-thanks';
+      cardReport.appendChild(thanks);
+    }
+    thanks.textContent = 'ありがとう！報告を受け付けました';
+    thanks.classList.remove('report-thanks--fade');
+    // 再フロー強制して transition を再起動
+    void thanks.offsetWidth;
+    if (thanks._tid) clearTimeout(thanks._tid);
+    thanks._tid = setTimeout(function () {
+      thanks.classList.add('report-thanks--fade');
+    }, 1800);
+  });
+
   // ---- エントリーポイント ----
 
   if (MODE === 'nearby') {
     setStatus('loading', '📡 現在地を取得中...');
-    setDebug('nearby confirmed / checking navigator.geolocation...');
   }
 
   if (navigator.geolocation) {
-    if (MODE === 'nearby') setDebug('geolocation API available');
     navigator.geolocation.getCurrentPosition(
       function (pos) {
-        var lat = pos.coords.latitude.toFixed(4);
-        var lng = pos.coords.longitude.toFixed(4);
-        if (MODE === 'nearby') setDebug('geolocation success  lat=' + lat + '  lng=' + lng, 'ok');
         renderByDistance(pos.coords.latitude, pos.coords.longitude);
       },
       function (err) {
-        var codeMap = { 1: 'PERMISSION_DENIED', 2: 'POSITION_UNAVAILABLE', 3: 'TIMEOUT' };
-        var label = codeMap[err.code] || 'UNKNOWN';
-        if (MODE === 'nearby') setDebug('geolocation error  code=' + err.code + ' (' + label + ')  msg=' + err.message, 'err');
         showFallback(err.code === 1 ? 'denied' : 'error');
       },
       { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false }
     );
-  } else {
-    if (MODE === 'nearby') setDebug('geolocation API NOT available', 'err');
-    if (MODE === 'nearby') showFallback('error');
+  } else if (MODE === 'nearby') {
+    showFallback('error');
   }
 
 })();

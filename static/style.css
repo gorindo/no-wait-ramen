@@ -23,7 +23,6 @@ body.index-page {
     background-color: #111;
 }
 
-/* 背景画像ラッパー */
 .hero {
     position: relative;
     min-height: 100vh;
@@ -37,7 +36,6 @@ body.index-page {
     text-align: center;
 }
 
-/* 黒オーバーレイ */
 .hero::before {
     content: '';
     position: absolute;
@@ -45,7 +43,6 @@ body.index-page {
     background: rgba(0, 0, 0, 0.52);
 }
 
-/* テキスト・ボタンを前面に */
 .hero-overlay {
     position: relative;
     z-index: 1;
@@ -85,7 +82,6 @@ body.index-page {
     letter-spacing: 0.04em;
 }
 
-/* フィルタボタン群（トップ） */
 .filter-buttons {
     display: flex;
     flex-direction: column;
@@ -93,7 +89,6 @@ body.index-page {
     width: 100%;
 }
 
-/* 横並びサブボタン行 */
 .filter-buttons-sub {
     display: flex;
     gap: 10px;
@@ -106,7 +101,6 @@ body.index-page {
     padding: 14px 0;
 }
 
-/* 現在地ボタン */
 .hero-button--location {
     background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #1e40af 100%);
     box-shadow:
@@ -166,18 +160,12 @@ body.result-page {
     background-color: #f7f5f2;
 }
 
-/* デバッグ帯がある場合はコンテンツを押し下げる */
-body.has-debug-bar {
-    padding-top: 40px;
-}
-
 .container {
     padding: 24px 16px 40px;
     max-width: 480px;
     margin: 0 auto;
 }
 
-/* ページヘッダー */
 .page-header {
     text-align: center;
     margin-bottom: 24px;
@@ -199,7 +187,6 @@ h1 {
     margin: 0 0 14px;
 }
 
-/* フィルタチップ（結果ページ） */
 .filter-nav {
     display: flex;
     flex-wrap: wrap;
@@ -269,7 +256,6 @@ h1 {
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
-/* おすすめカード */
 .card-top {
     border-left-width: 4px;
     box-shadow:
@@ -277,23 +263,20 @@ h1 {
         0 8px 24px rgba(0,0,0,0.07);
 }
 
-/* 左ライン：wait_level 別カラー */
 .green  { border-left-color: #16a34a; }
 .yellow { border-left-color: #d97706; }
 .red    { border-left-color: #dc2626; }
 
-/* カード全体への薄い色味 */
 .card.green  { background: #f0fdf4; }
 .card.yellow { background: #fffbeb; }
 .card.red    { background: #fff1f2; }
 
-/* カードヘッダー行 */
 .card-head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .card-head-left {
@@ -334,10 +317,11 @@ h1 {
     display: inline-block;
     font-size: 11px;
     font-weight: 700;
-    padding: 4px 10px;
+    padding: 5px 11px;
     border-radius: 50px;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     white-space: nowrap;
+    line-height: 1;
 }
 
 .wait-pill--green  { background: #16a34a; color: #fff; }
@@ -350,16 +334,8 @@ h1 {
     flex-wrap: wrap;
     align-items: center;
     gap: 4px 6px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
-
-.open-status {
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.open-status.open   { color: #34a853; }
-.open-status.closed { color: #bbb; font-weight: 400; }
 
 .meta-sep {
     color: #ccc;
@@ -382,32 +358,136 @@ h1 {
     letter-spacing: 0.02em;
 }
 
+/* 待ち時間の根拠 */
+.wait-reason {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+
+.card.green  .wait-reason { color: #166534; }
+.card.yellow .wait-reason { color: #92400e; }
+.card.red    .wait-reason { color: #991b1b; }
+
 /* コメント・住所 */
 .shop-comment {
     font-size: 14px;
     color: #333;
-    margin: 0 0 6px;
+    margin: 0 0 4px;
     line-height: 1.5;
-}
-
-.crowd-reason {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    color: #777;
-    background: #f3f0ed;
-    padding: 3px 10px;
-    border-radius: 4px;
-    margin: 0 0 10px;
-    letter-spacing: 0.02em;
-    line-height: 1.4;
 }
 
 .shop-address {
     font-size: 11px;
     color: #bbb;
-    margin: 0 0 14px;
+    margin: 0 0 12px;
     line-height: 1.5;
+}
+
+/* ===========================
+   最終更新 & 報告UI
+=========================== */
+.card-report {
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding-top: 10px;
+    margin-bottom: 14px;
+}
+
+.card-report-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.updated-time {
+    font-size: 11px;
+    color: #bbb;
+    letter-spacing: 0.02em;
+}
+
+.report-summary {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    background: rgba(0,0,0,0.04);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+}
+
+.report-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.report-label {
+    font-size: 11px;
+    color: #bbb;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.report-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.report-chip {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+}
+
+.report-chip:hover {
+    border-color: #aaa;
+    color: #333;
+}
+
+.report-chip:active {
+    transform: scale(0.95);
+}
+
+.report-chip--selected {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #1a1a1a;
+}
+
+.report-chip--dimmed {
+    opacity: 0.3;
+}
+
+/* お礼メッセージ */
+.report-thanks {
+    font-size: 11px;
+    font-weight: 500;
+    color: #555;
+    margin: 8px 0 0;
+    letter-spacing: 0.02em;
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}
+
+.report-thanks--fade {
+    opacity: 0;
 }
 
 /* カードボタン */
@@ -501,7 +581,6 @@ h1 {
     font-weight: 400;
 }
 
-/* 距離テキスト（カード内メタ行） */
 .distance-text {
     font-size: 12px;
     font-weight: 700;
@@ -509,31 +588,27 @@ h1 {
 }
 
 /* ===========================
-   デバッグ帯（一時）
+   エリア外通知
 =========================== */
-.debug-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999;
-    background: #1e1e1e;
-    color: #e5e5e5;
-    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.4;
-    padding: 8px 14px;
-    word-break: break-all;
-    min-height: 36px;
+/* 仮反映ノート */
+.temp-note {
+    display: block;
+    font-size: 10px;
+    color: #aaa;
+    margin-top: 5px;
+    letter-spacing: 0.02em;
+    text-align: right;
 }
 
-.debug-bar[data-state="ok"] {
-    background: #14532d;
-    color: #bbf7d0;
-}
-
-.debug-bar[data-state="err"] {
-    background: #7f1d1d;
-    color: #fecaca;
+#area-notice {
+    font-size: 12px;
+    color: #7a6a55;
+    background: #fdf6ed;
+    border: 1px solid #e8d9c0;
+    border-radius: 8px;
+    padding: 9px 14px;
+    margin: 0 0 10px;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    text-align: center;
 }

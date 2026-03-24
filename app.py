@@ -128,6 +128,8 @@ def compute_wait_level(shop, now=None):
 # ============================================================
 # 店舗データ（池袋駅徒歩圏）
 # wait_level は実行時に compute_wait_level() で動的に決定する
+# updated_minutes_ago : 最終更新からの経過分数（仮データ）
+# report_summary      : ユーザー報告のサマリー（仮データ、None = 報告なし）
 # ============================================================
 ramen_shops = [
     {
@@ -145,7 +147,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": True,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 4,
+        "report_summary": "空いてた報告あり",
     },
     {
         "name": "つけ麺 道 池袋東口",
@@ -162,7 +166,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 11,
+        "report_summary": None,
     },
     {
         "name": "博多風龍 池袋店",
@@ -179,7 +185,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": True,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 7,
+        "report_summary": "空いてた報告あり",
     },
     {
         "name": "無敵家",
@@ -196,7 +204,9 @@ ramen_shops = [
         "popular_level": 3,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 3,
+        "report_summary": "混んでた報告あり",
     },
     {
         "name": "麺屋 武蔵 池袋店",
@@ -213,7 +223,9 @@ ramen_shops = [
         "popular_level": 3,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 18,
+        "report_summary": "やや混み報告あり",
     },
     {
         "name": "ラーメン二郎 池袋東口店",
@@ -230,7 +242,9 @@ ramen_shops = [
         "popular_level": 3,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 6,
+        "report_summary": "混んでた報告あり",
     },
     {
         "name": "頑者 池袋店",
@@ -247,7 +261,9 @@ ramen_shops = [
         "popular_level": 2,
         "fast_turnover": False,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 22,
+        "report_summary": None,
     },
     {
         "name": "らーめん壱角家 池袋西口店",
@@ -264,7 +280,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": True,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 9,
+        "report_summary": "空いてた報告あり",
     },
     {
         "name": "鷹の目 池袋",
@@ -281,7 +299,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 31,
+        "report_summary": None,
     },
     {
         "name": "らあめん花月嵐 池袋店",
@@ -298,7 +318,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": True,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 14,
+        "report_summary": None,
     },
     {
         "name": "麺創房 無敵家 別館",
@@ -315,7 +337,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 45,
+        "report_summary": None,
     },
     {
         "name": "黒帯 池袋店",
@@ -332,7 +356,9 @@ ramen_shops = [
         "popular_level": 2,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 8,
+        "report_summary": "やや混み報告あり",
     },
     {
         "name": "鶏白湯ラーメン 鳥の庄",
@@ -349,7 +375,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 26,
+        "report_summary": "空いてた報告あり",
     },
     {
         "name": "東京豚骨拉麺 ばんから 池袋店",
@@ -366,7 +394,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": True,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 5,
+        "report_summary": None,
     },
     {
         "name": "麺屋 こころ 池袋",
@@ -383,7 +413,9 @@ ramen_shops = [
         "popular_level": 2,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 17,
+        "report_summary": "やや混み報告あり",
     },
     {
         "name": "らーめん 天下一品 池袋東口店",
@@ -400,7 +432,9 @@ ramen_shops = [
         "popular_level": 2,
         "fast_turnover": True,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 12,
+        "report_summary": None,
     },
     {
         "name": "池袋大勝軒",
@@ -417,7 +451,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 33,
+        "report_summary": "空いてた報告あり",
     },
     {
         "name": "北海道らーめん 札幌や 池袋",
@@ -434,7 +470,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": True,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 21,
+        "report_summary": None,
     },
     {
         "name": "麺屋 一燈 池袋",
@@ -451,7 +489,9 @@ ramen_shops = [
         "popular_level": 3,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 8,
+        "report_summary": "混んでた報告あり",
     },
     {
         "name": "凪 煮干しそば 池袋",
@@ -468,7 +508,9 @@ ramen_shops = [
         "popular_level": 3,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 15,
+        "report_summary": "やや混み報告あり",
     },
     {
         "name": "ソラノイロ 池袋",
@@ -485,7 +527,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 38,
+        "report_summary": None,
     },
     {
         "name": "麺処 花田 池袋店",
@@ -502,7 +546,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 10,
+        "report_summary": None,
     },
     {
         "name": "麺や 七彩 池袋",
@@ -519,7 +565,9 @@ ramen_shops = [
         "popular_level": 2,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 19,
+        "report_summary": "やや混み報告あり",
     },
     {
         "name": "塩そば 彩 池袋",
@@ -536,7 +584,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 42,
+        "report_summary": None,
     },
     {
         "name": "中華そば 青葉 池袋",
@@ -553,7 +603,9 @@ ramen_shops = [
         "popular_level": 2,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 7,
+        "report_summary": None,
     },
     {
         "name": "麺家 うえだ 池袋",
@@ -570,7 +622,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 28,
+        "report_summary": "空いてた報告あり",
     },
     {
         "name": "担々麺 吉虎 池袋",
@@ -587,7 +641,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": False
+        "dinner_peak_strong": False,
+        "updated_minutes_ago": 55,
+        "report_summary": None,
     },
     {
         "name": "とんこつラーメン 天神 池袋",
@@ -604,7 +660,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": True,
         "lunch_peak_strong": False,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 13,
+        "report_summary": None,
     },
     {
         "name": "麺屋 龍之介 池袋",
@@ -621,7 +679,9 @@ ramen_shops = [
         "popular_level": 1,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 24,
+        "report_summary": None,
     },
     {
         "name": "東池袋大勝軒 本店",
@@ -638,7 +698,9 @@ ramen_shops = [
         "popular_level": 3,
         "fast_turnover": False,
         "lunch_peak_strong": True,
-        "dinner_peak_strong": True
+        "dinner_peak_strong": True,
+        "updated_minutes_ago": 6,
+        "report_summary": "混んでた報告あり",
     }
 ]
 
