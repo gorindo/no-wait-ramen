@@ -181,8 +181,33 @@ body.result-page {
 }
 
 .page-header {
+    position: relative;
     text-align: center;
-    margin-bottom: 24px;
+    margin: 0 -16px 20px;
+    padding: 28px 16px 20px;
+    border-radius: 0 0 20px 20px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center right;
+    background-repeat: no-repeat;
+}
+
+.page-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to right,
+        rgba(247, 245, 242, 0.78) 30%,
+        rgba(247, 245, 242, 0.35) 65%,
+        rgba(247, 245, 242, 0.08) 100%
+    );
+    pointer-events: none;
+}
+
+.page-header > * {
+    position: relative;
+    z-index: 2;
 }
 
 .title-home-link {
@@ -201,7 +226,17 @@ h1 {
     font-weight: 800;
     color: #1a1a1a;
     letter-spacing: -0.02em;
-    margin: 8px 0 8px;
+    margin: 12px 0 0;
+}
+
+h1::after {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 2px;
+    background: #ff6b00;
+    border-radius: 2px;
+    margin: 8px auto 0;
 }
 
 .area-chip {

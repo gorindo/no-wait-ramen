@@ -11,9 +11,10 @@
 {# script type="application/json" はブラウザに実行されず、tojson は </script> を unicode エスケープするため安全 #}
 <script type="application/json" id="app-data">{{ {"shops": all_shops_json, "maxDisplay": max_display, "mode": mode} | tojson }}</script>
 
+{% set ramen2_url = url_for('static', filename='ramen2.png') %}
 <div class="container">
 
-    <header class="page-header">
+    <header class="page-header" style="background-image: url('{{ ramen2_url }}');">
         <h1><a href="/" class="title-home-link">今すぐ入れる店</a></h1>
         <p class="area-chip">{{ area_name }} ▼</p>
         <p class="filter-label">{{ filter_label }}</p>
