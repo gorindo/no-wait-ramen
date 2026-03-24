@@ -216,6 +216,13 @@ h1 {
     margin: 0 0 14px;
 }
 
+.filter-nav-bottom {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    text-align: center;
+}
+
 .filter-hint {
     font-size: 10px;
     color: #bbb;

@@ -165,6 +165,17 @@
     </div>
     {% endif %}
 
+    <div class="filter-nav-bottom">
+        <div class="filter-nav">
+            <a href="/result?max_walk=5"
+               class="filter-chip{% if max_walk == 5 %} active{% endif %}">徒歩5分以内</a>
+            <a href="/result?max_walk=10"
+               class="filter-chip{% if max_walk == 10 %} active{% endif %}">徒歩10分以内</a>
+            <a href="/result"
+               class="filter-chip{% if max_walk is none %} active{% endif %}">すべて</a>
+        </div>
+    </div>
+
 </div>
 
 <script>
