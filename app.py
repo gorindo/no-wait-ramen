@@ -173,25 +173,6 @@ def compute_wait_level(shop, now=None):
 # ============================================================
 ramen_shops = [
     {
-        "name": "五行 池袋西口店",
-        "comment": "焦がし味噌が看板。カウンターのみで静か",
-        "address": "東京都豊島区西池袋1-10-3",
-        "map_url": "https://maps.google.com/?q=五行+池袋西口",
-        "is_open": True,
-        "walk_time": "池袋駅から徒歩2分",
-        "walk_minutes": 2,
-        "tag": "焦がし味噌",
-        "latitude": 35.7297,
-        "longitude": 139.7086,
-        "base_crowd_score": 0,
-        "popular_level": 1,
-        "fast_turnover": True,
-        "lunch_peak_strong": False,
-        "dinner_peak_strong": False,
-        "updated_minutes_ago": 4,
-        "report_summary": "空いてた報告あり",
-    },
-    {
         "name": "つけ麺 道 池袋東口",
         "comment": "濃厚魚介系つけ麺。麺の量が選べる",
         "address": "東京都豊島区東池袋1-6-3",
@@ -308,8 +289,9 @@ ramen_shops = [
     {
         "name": "らーめん壱角家 池袋西口店",
         "comment": "家系チェーン。安定の味と回転の速さ",
-        "address": "東京都豊島区西池袋2-28-7",
-        "map_url": "https://maps.google.com/?q=壱角家+池袋西口",
+        "address": "東京都豊島区西池袋1-26-5",
+        "map_url": "https://maps.app.goo.gl/yMa1wu6yxWn7SDvJA",
+        "route_url": "https://maps.app.goo.gl/yMa1wu6yxWn7SDvJA",
         "is_open": True,
         "walk_time": "池袋駅から徒歩4分",
         "walk_minutes": 4,
@@ -323,25 +305,6 @@ ramen_shops = [
         "dinner_peak_strong": False,
         "updated_minutes_ago": 9,
         "report_summary": "空いてた報告あり",
-    },
-    {
-        "name": "鷹の目 池袋",
-        "comment": "あっさり塩スープが人気の隠れ家的一軒",
-        "address": "東京都豊島区西池袋2-18-4",
-        "map_url": "https://maps.google.com/?q=鷹の目+池袋",
-        "is_open": False,
-        "walk_time": "池袋駅から徒歩5分",
-        "walk_minutes": 5,
-        "tag": "塩ラーメン",
-        "latitude": 35.7312,
-        "longitude": 139.7068,
-        "base_crowd_score": 1,
-        "popular_level": 1,
-        "fast_turnover": False,
-        "lunch_peak_strong": False,
-        "dinner_peak_strong": False,
-        "updated_minutes_ago": 31,
-        "report_summary": None,
     },
     {
         "name": "らあめん花月嵐 池袋店",
@@ -360,25 +323,6 @@ ramen_shops = [
         "lunch_peak_strong": True,
         "dinner_peak_strong": False,
         "updated_minutes_ago": 14,
-        "report_summary": None,
-    },
-    {
-        "name": "麺創房 無敵家 別館",
-        "comment": "本店とは異なるメニュー展開",
-        "address": "東京都豊島区南池袋1-21-5",
-        "map_url": "https://maps.google.com/?q=麺創房+無敵家+別館+池袋",
-        "is_open": False,
-        "walk_time": "池袋駅から徒歩5分",
-        "walk_minutes": 5,
-        "tag": "あっさり醤油",
-        "latitude": 35.7262,
-        "longitude": 139.7112,
-        "base_crowd_score": 1,
-        "popular_level": 1,
-        "fast_turnover": False,
-        "lunch_peak_strong": False,
-        "dinner_peak_strong": False,
-        "updated_minutes_ago": 45,
         "report_summary": None,
     },
     {
@@ -761,8 +705,9 @@ def result():
     for shop in ramen_shops:
         s = dict(shop)
         s["wait_level"], s["reason"] = compute_wait_level(s, now)
-        s["route_url"] = "https://www.google.com/maps/dir/?api=1&destination=" + quote(s["address"]) + "&travelmode=walking"
         s["area"] = s.get("area", AREA_NAME)
+        if not s.get("route_url"):
+            s["route_url"] = "https://www.google.com/maps/dir/?api=1&destination=" + quote(s["address"]) + "&travelmode=walking"
         enriched.append(s)
 
     # 徒歩圏フィルタ
