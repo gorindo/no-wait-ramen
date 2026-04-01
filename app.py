@@ -8,7 +8,7 @@ app = Flask(__name__)
 MAX_DISPLAY = 10
 
 # 対象エリア名（将来の多地域展開時にここを変更 or リスト化する）
-AREA_NAME = "池袋"
+AREA_NAME = "溝の口"
 
 # ソートキー: 営業中 > 待ちレベル(green/yellow/red) > 徒歩分数
 WAIT_LEVEL_ORDER = {"green": 0, "yellow": 1, "red": 2}
@@ -329,11 +329,11 @@ def result():
     if max_walk_str and max_walk_str.isdigit():
         max_walk = int(max_walk_str)
         filtered = [s for s in enriched if s["walk_minutes"] <= max_walk]
-        filter_label = f"池袋駅から徒歩{max_walk}分以内の営業中店舗"
+        filter_label = f"溝の口駅から徒歩{max_walk}分以内の営業中店舗"
     else:
         max_walk = None
         filtered = enriched
-        filter_label = "池袋駅周辺の営業中店舗"
+        filter_label = "溝の口駅周辺の営業中店舗"
 
     # 営業中のみ表示（デフォルト動作）
     # 将来 "閉店中も含む" 表示が必要になった場合は、ここで条件を分岐させる

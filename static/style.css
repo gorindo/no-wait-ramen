@@ -651,6 +651,36 @@ h1::after {
 
 
 /* ===========================
+   位置情報取得ボタン
+=========================== */
+.geo-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 10px;
+    background: #fff;
+    color: #1d4ed8;
+    font-size: 15px;
+    font-weight: 600;
+    border: 2px solid #1d4ed8;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    text-align: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+.geo-btn:active {
+    background: #eff6ff;
+}
+
+.geo-btn:disabled {
+    color: #93c5fd;
+    border-color: #93c5fd;
+    cursor: default;
+}
+
+/* ===========================
    現在地ステータス・距離表示
 =========================== */
 .location-note {
@@ -674,10 +704,18 @@ h1::after {
     color: #166534;
 }
 
-.location-note--fallback {
-    background: #f5f5f5;
-    color: #999;
+.location-note--fallback-denied {
+    background: #fff7ed;
+    color: #9a3412;
+    font-weight: 500;
+    border: 1px solid #fed7aa;
+}
+
+.location-note--fallback-error {
+    background: #f8fafc;
+    color: #475569;
     font-weight: 400;
+    border: 1px solid #e2e8f0;
 }
 
 .distance-text {
@@ -743,7 +781,7 @@ h1::after {
 }
 
 #area-notice {
-    font-size: 15px;
+    font-size: 13px;
     color: #7a6a55;
     background: #fdf6ed;
     border: 1px solid #e8d9c0;

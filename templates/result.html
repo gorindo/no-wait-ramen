@@ -22,7 +22,10 @@
         <p class="area-chip">{{ area_name }} ▼</p>
         <p class="filter-label">{{ filter_label }}</p>
         <div id="location-status"></div>
-        <div id="area-notice" hidden></div>
+        <div id="geo-btn-wrap" hidden>
+            <button id="geo-btn" class="geo-btn" type="button">📍 現在地から近い順に並べる</button>
+        </div>
+<div id="area-notice" hidden></div>
         <p id="sub-text" class="sub-text">
             待ち時間・近さをもとに最大{{ max_display }}件を表示
             {% if total_count > max_display %}（全{{ total_count }}件中）{% endif %}
@@ -191,10 +194,10 @@
   var MAX_DISPLAY = appData.maxDisplay;
   var MODE        = appData.mode;
 
-  // ---- 池袋駅の座標・エリア判定しきい値 ----
+  // ---- 溝の口駅の座標・エリア判定しきい値 ----
 
-  var IKEBUKURO_LAT  = 35.7295;
-  var IKEBUKURO_LNG  = 139.7109;
+  var STATION_LAT    = 35.6013;
+  var STATION_LNG    = 139.6073;
   var AREA_THRESHOLD = 2000;
 
   // ---- ユーティリティ ----
@@ -298,10 +301,10 @@
 
   // ---- エリア外通知 ----
 
-  function showAreaNotice(distToIkebukuro) {
+  function showAreaNotice(distToStation) {
     var el = document.getElementById('area-notice');
     if (!el) return;
-    el.textContent = '現在地から池袋まで約' + fmtDist(distToIkebukuro) + 'あります。池袋周辺の店を現在地からの距離順で表示しています。';
+    el.innerHTML = '現在地から溝の口駅まで約' + fmtDist(distToStation) + 'あります。<br>溝の口周辺の店を現在地からの距離順で表示しています。';
     el.hidden = false;
   }
 
@@ -312,9 +315,9 @@
       return Object.assign({}, s, { _dist: haversine(userLat, userLng, s.latitude, s.longitude) });
     });
 
-    // おすすめスコアで降順ソート → 上位 MAX_DISPLAY 件
+    // 距離の昇順でソート → 上位 MAX_DISPLAY 件
     withDist.sort(function (a, b) {
-      return shopScore(b, b._dist) - shopScore(a, a._dist);
+      return a._dist - b._dist;
     });
     var sorted = withDist.slice(0, MAX_DISPLAY);
 
@@ -336,19 +339,27 @@
 
     setStatus('ok', '📍 現在地から近い順に表示しています');
 
-    var distToIkebukuro = haversine(userLat, userLng, IKEBUKURO_LAT, IKEBUKURO_LNG);
-    if (distToIkebukuro > AREA_THRESHOLD) {
-      showAreaNotice(distToIkebukuro);
+    var distToStation = haversine(userLat, userLng, STATION_LAT, STATION_LNG);
+    if (distToStation > AREA_THRESHOLD) {
+      showAreaNotice(distToStation);
     }
   }
 
   // ---- フォールバック ----
 
   function showFallback(reason) {
-    var msg = reason === 'denied'
-      ? '位置情報の取得が許可されていないため、池袋駅基準で表示しています'
-      : '現在地を取得できなかったため、池袋駅基準で表示しています';
-    setStatus('fallback', msg);
+    var type, msg;
+    if (reason === 'denied') {
+      type = 'fallback-denied';
+      msg = '⚠️ 位置情報が許可されていないため、溝の口駅基準で表示しています';
+    } else if (reason === 'unsupported') {
+      type = 'fallback-denied';
+      msg = '⚠️ お使いのブラウザは位置情報に対応していません。溝の口駅基準で表示しています';
+    } else {
+      type = 'fallback-error';
+      msg = '📍 位置情報を取得できなかったため、溝の口駅基準で表示しています';
+    }
+    setStatus(type, msg);
   }
 
   // ---- ステータス表示 ----
@@ -419,21 +430,33 @@
   // ---- エントリーポイント ----
 
   if (MODE === 'nearby') {
-    setStatus('loading', '📡 現在地を取得中...');
-  }
+    var geoBtnWrap = document.getElementById('geo-btn-wrap');
+    var geoBtn     = document.getElementById('geo-btn');
+    if (geoBtnWrap) geoBtnWrap.hidden = false;
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      function (pos) {
-        renderByDistance(pos.coords.latitude, pos.coords.longitude);
-      },
-      function (err) {
-        showFallback(err.code === 1 ? 'denied' : 'error');
-      },
-      { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false }
-    );
-  } else if (MODE === 'nearby') {
-    showFallback('error');
+    if (geoBtn) {
+      geoBtn.addEventListener('click', function () {
+        if (!navigator.geolocation) {
+          showFallback('unsupported');
+          return;
+        }
+        geoBtn.disabled = true;
+        geoBtn.textContent = '📡 取得中...';
+        setStatus('loading', '📡 現在地を取得中...');
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            if (geoBtnWrap) geoBtnWrap.hidden = true;
+            renderByDistance(pos.coords.latitude, pos.coords.longitude);
+          },
+          function (err) {
+            geoBtn.disabled = false;
+            geoBtn.textContent = '📍 現在地から近い順に並べる';
+            showFallback(err.code === 1 ? 'denied' : 'error');
+          },
+          { timeout: 8000, maximumAge: 60000, enableHighAccuracy: true }
+        );
+      });
+    }
   }
 
 })();
