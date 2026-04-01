@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="card-actions">
-                <a href="{{ shop.map_url }}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">店舗情報を見る</a>
+                <a href="{{ shop.website_url if shop.website_url else shop.map_url }}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">店舗情報を見る</a>
                 <a href="{{ shop.route_url }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">ここへ行く →</a>
             </div>
         </div>
@@ -152,7 +152,7 @@
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="{{ shop.map_url }}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">店舗情報を見る</a>
+                    <a href="{{ shop.website_url if shop.website_url else shop.map_url }}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">店舗情報を見る</a>
                     <a href="{{ shop.route_url }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">ここへ行く →</a>
                 </div>
             </div>
@@ -291,7 +291,7 @@
       + '<button class="report-chip" type="button">混んでた</button>'
       + '</div></div></div>'
       + '<div class="card-actions">'
-      + '<a href="' + escHtml(shop.map_url) + '" class="btn btn-outline" target="_blank" rel="noopener noreferrer">店舗情報を見る</a>'
+      + '<a href="' + escHtml(shop.website_url || shop.map_url) + '" class="btn btn-outline" target="_blank" rel="noopener noreferrer">店舗情報を見る</a>'
       + '<a href="' + escHtml(shop.route_url) + '" class="btn btn-primary" target="_blank" rel="noopener noreferrer">ここへ行く →</a>'
       + '</div></div>';
   }

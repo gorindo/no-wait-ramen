@@ -292,6 +292,7 @@ ramen_shops = [
         "address": "東京都豊島区西池袋1-26-5",
         "map_url": "https://maps.app.goo.gl/yMa1wu6yxWn7SDvJA",
         "route_url": "https://maps.app.goo.gl/yMa1wu6yxWn7SDvJA",
+        "website_url": "https://ichikakuya.com/",
         "is_open": True,
         "walk_time": "池袋駅から徒歩4分",
         "walk_minutes": 4,
