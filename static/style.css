@@ -694,6 +694,15 @@ h1::after {
     line-height: 1.6;
 }
 
+.location-note--pending {
+    background: transparent;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 400;
+    padding: 4px 0;
+    border-radius: 0;
+}
+
 .location-note--loading {
     background: #eff6ff;
     color: #1d4ed8;
@@ -714,7 +723,13 @@ h1::after {
 .location-note--fallback-error {
     background: #f8fafc;
     color: #475569;
+    font-size: 13px;
     font-weight: 400;
+    line-height: 1.5;
+    padding: 8px 14px;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
     border: 1px solid #e2e8f0;
 }
 

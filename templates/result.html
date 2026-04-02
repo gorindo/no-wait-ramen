@@ -349,15 +349,12 @@
 
   function showFallback(reason) {
     var type, msg;
-    if (reason === 'denied') {
-      type = 'fallback-denied';
-      msg = '⚠️ 位置情報が許可されていないため、溝の口駅基準で表示しています';
-    } else if (reason === 'unsupported') {
-      type = 'fallback-denied';
+    if (reason === 'unsupported') {
+      type = 'fallback-error';
       msg = '⚠️ お使いのブラウザは位置情報に対応していません。溝の口駅基準で表示しています';
     } else {
       type = 'fallback-error';
-      msg = '📍 位置情報を取得できなかったため、溝の口駅基準で表示しています';
+      msg = '📍 現在地が取得できませんでした。「もう一度試す」または位置情報設定をご確認ください';
     }
     setStatus(type, msg);
   }
@@ -433,6 +430,7 @@
     var geoBtnWrap = document.getElementById('geo-btn-wrap');
     var geoBtn     = document.getElementById('geo-btn');
     if (geoBtnWrap) geoBtnWrap.hidden = false;
+    setStatus('pending', '現在地を使うと近い順に並べられます');
 
     if (geoBtn) {
       geoBtn.addEventListener('click', function () {
@@ -450,7 +448,7 @@
           },
           function (err) {
             geoBtn.disabled = false;
-            geoBtn.textContent = '📍 現在地から近い順に並べる';
+            geoBtn.textContent = '🔄 もう一度試す';
             showFallback(err.code === 1 ? 'denied' : 'error');
           },
           { timeout: 8000, maximumAge: 60000, enableHighAccuracy: true }
